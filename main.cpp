@@ -27,6 +27,9 @@ int main()
         return 0;
     }
 
+    std::string res = bigInt1.addition(*stringBigInt1,*stringBigInt2);
+    std::cout << res;
+
     delete[] stringBigInt1;
     delete[] stringBigInt2;
 
