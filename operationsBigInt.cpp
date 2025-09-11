@@ -9,14 +9,21 @@ void addSumDigit(char symbol, int result,
     *resultString += symbol;
     counter--;
 
-    string1.pop_back(); // throw away last symbols - we counted them
-    string2.pop_back();
+    if ( !string1.empty() )
+    {
+        string1.pop_back(); // throw away last symbols - we counted them
+    }
+
+    if ( !string2.empty() )
+    {
+        string2.pop_back(); // throw away last symbols - we counted them
+    }
 }
 
 void stringEmptyAddition(std::string &string1, std::string &string2,
     int &result, std::string * resultString, char &symbol, int &counter )
 {
-    if (string1.empty())
+    if (string1.empty() && !string2.empty())
     {
         if ( result + atoi(&string2.back()) % 10 > 9)
         {
@@ -27,12 +34,16 @@ void stringEmptyAddition(std::string &string1, std::string &string2,
             result = result / 10; // get ten for next digit
         }
 
-        *resultString += atoi(&string2.back()) % 10 + '0';
-        string2.pop_back();
-        counter--;
+        if (counter > 0)
+        {
+            *resultString += atoi(&string2.back()) % 10 + '0';
+            string2.pop_back();
+            counter--;
+        }
+
     }
 
-    if (string2.empty())
+    if (string2.empty() && !string1.empty())
     {
         if ( result + atoi(&string1.back()) % 10 > 9)
         {
@@ -44,9 +55,12 @@ void stringEmptyAddition(std::string &string1, std::string &string2,
             result = result / 10; // get ten for next digit
         }
 
-        *resultString += atoi(&string1.back()) % 10 + '0';
-        string1.pop_back();
-        counter--;
+        if (counter > 0)
+        {
+            *resultString += atoi(&string1.back()) % 10 + '0';
+            string1.pop_back();
+            counter--;
+        }
     }
 }
 
@@ -101,32 +115,13 @@ std::string BigInt::addition(std::string string1, std::string string2)
 
         else
         {
-            result += atoi(&string2.back()) + atoi(&string1.back()); // get the last digits
+            stringFullAddition(result,string1,string2,counter,symbol,
+               counter,resultLength,resultString);
 
-            if (result > 9)
+            if (string1.empty() && string2.empty() && result > 0)
             {
-                if (resultString->length() == resultLength) // then we create a new resize str - bigger than old
-                {
-                    char newDigit = result + atoi(&string1.back()) % 10 + '0';
-
-                    if (string1.empty())
-                    {
-                        *resultString += newDigit;
-                    }
-                    if (string2.empty())
-                    {
-                        *resultString += newDigit;
-                    }
-
-                }
-
-                addSumDigit(symbol, result, resultString, counter, string1, string2);
-                result = result / 10; // get ten for next digit
-                continue;
+                *resultString += result % 10 + '0';
             }
-
-            addSumDigit(symbol, result, resultString, counter, string1, string2);
-            result = 0;
         }
 
     }
