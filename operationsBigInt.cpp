@@ -1,3 +1,4 @@
+#include <chrono>
 #include <iostream>
 #include "classBigInt.h"
 
@@ -12,7 +13,7 @@ void addSumDigit(char symbol, int result,
     string2.pop_back();
 }
 
-int stringEmptyAddition(std::string &string1, std::string &string2,
+void stringEmptyAddition(std::string &string1, std::string &string2,
     int &result, std::string * resultString, char &symbol, int &counter )
 {
     if (string1.empty())
@@ -24,14 +25,11 @@ int stringEmptyAddition(std::string &string1, std::string &string2,
 
             addSumDigit(symbol, result, resultString, counter, string1, string2);
             result = result / 10; // get ten for next digit
-            return 0;
         }
 
         *resultString += atoi(&string2.back()) % 10 + '0';
         string2.pop_back();
         counter--;
-
-        return 1;
     }
 
     if (string2.empty())
@@ -44,14 +42,45 @@ int stringEmptyAddition(std::string &string1, std::string &string2,
 
             addSumDigit(symbol, result, resultString, counter, string1, string2);
             result = result / 10; // get ten for next digit
-            return 0;
         }
 
         *resultString += atoi(&string1.back()) % 10 + '0';
         string1.pop_back();
         counter--;
-        return 1;
     }
+}
+
+void stringFullAddition(int &result, std::string &string1, std::string &string2,
+    int &counter, char &symbol, int &counter2, int &resultLength, std::string * resultString)
+{
+    result += atoi(&string2.back()) + atoi(&string1.back()); // get the last digits
+
+    if (result > 9)
+    {
+        if (resultString->length() == resultLength) // then we create a new resize str - bigger than old
+        {
+            char newDigit = result + atoi(&string1.back()) % 10 + '0';
+
+            if (string1.empty())
+            {
+                *resultString += newDigit;
+            }
+            if (string2.empty())
+            {
+                *resultString += newDigit;
+            }
+
+            resultLength += 1;
+
+        }
+
+        addSumDigit(symbol, result, resultString, counter, string1, string2);
+        result = result / 10; // get ten for next digit
+        return;
+    }
+
+    addSumDigit(symbol, result, resultString, counter, string1, string2);
+    result = 0;
 }
 
 std::string BigInt::addition(std::string string1, std::string string2)
@@ -66,42 +95,8 @@ std::string BigInt::addition(std::string string1, std::string string2)
     {
         if ( string1.empty() || string2.empty() )
         {
-            if (string1.empty())
-            {
-                if ( result + atoi(&string2.back()) % 10 > 9)
-                {
-                    // resizeString(resultString, resultLength);
-                    char newDigit = ( result + (atoi(&string2.back()) % 10) ) % 10 + '0';
-                    *resultString += newDigit;
-
-                    addSumDigit(symbol, result, resultString, counter, string1, string2);
-                    result = result / 10; // get ten for next digit
-                    continue;
-                }
-
-                *resultString += atoi(&string2.back()) % 10 + '0';
-                string2.pop_back();
-                counter--;
-            }
-
-            if (string2.empty())
-            {
-                if ( result + atoi(&string1.back()) % 10 > 9)
-                {
-                    // resizeString(resultString, resultLength);
-                    char newDigit = ( result + (atoi(&string1.back()) % 10) ) + '0';
-                    *resultString += newDigit;
-
-                    addSumDigit(symbol, result, resultString, counter, string1, string2);
-                    result = result / 10; // get ten for next digit
-                    continue;
-                }
-
-                *resultString += atoi(&string1.back()) % 10 + '0';
-                string1.pop_back();
-                counter--;
-            }
-
+            stringEmptyAddition(string1,string2,
+                result,resultString,symbol, counter);
         }
 
         else
@@ -112,16 +107,15 @@ std::string BigInt::addition(std::string string1, std::string string2)
             {
                 if (resultString->length() == resultLength) // then we create a new resize str - bigger than old
                 {
-                    // resizeString(resultString, resultLength);
                     char newDigit = result + atoi(&string1.back()) % 10 + '0';
 
                     if (string1.empty())
                     {
-                        resultString += newDigit;
+                        *resultString += newDigit;
                     }
                     if (string2.empty())
                     {
-                        resultString += newDigit;
+                        *resultString += newDigit;
                     }
 
                 }
