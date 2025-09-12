@@ -8,23 +8,29 @@ int main()
 {
     using std::string;
 
-    int lenght1, lenght2;
-    std::cin >> lenght1;
-    std::cin >> lenght2;
+    string * operation = new string;
 
-    string * stringBigInt1 = new string[lenght1];
-    string * stringBigInt2 = new string[lenght2];
+    string * stringBigInt1 = new string;
+    string * stringBigInt2 = new string;
 
-    std::cin >> *stringBigInt1;
-    std::cin >> *stringBigInt2;
+    std::cin >> *stringBigInt1 >> *operation >> *stringBigInt2;
 
     BigInt bigInt1(stringBigInt1);
     BigInt bigInt2(stringBigInt2);
 
-    if (bigInt1.length != lenght1 || bigInt2.length != lenght2)
+    // std::stoi(*operation)
+
+    if (*operation == "+")
     {
-        std::cout << "wrong input";
+        std::string result = bigInt1.addition(*stringBigInt1, *stringBigInt2);
+        std::cout << result;
         return 0;
+    }
+
+    else if (*operation == " " && stringBigInt2[0] == "-")
+    {
+        std::string result = "-" + *stringBigInt2;
+        std::cout << result;
     }
 
     delete[] stringBigInt1;
