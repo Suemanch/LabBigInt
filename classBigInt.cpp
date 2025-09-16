@@ -2,50 +2,7 @@
 #include <iostream>
 #include "classBigInt.h"
 
-// std::string getResult(class BigInt bigInt1, class BigInt bigInt2, std::string * operation)
-// {
-//     if (*operation == "+" || *operation == "+=")
-//     {
-//         std::string result = bigInt1.addition(*bigInt1.stringArray, *bigInt2.stringArray);
-//         return result;
-//     }
-//
-//     if (*operation == "=")
-//     {
-//         std::string result = *bigInt2.stringArray;
-//         return result;
-//     }
-//
-//     if (*operation == "-=" || *operation == "-")
-//     {
-//         std::string * maxString;
-//         std::string * minString;
-//
-//         int num1 = stoi(*stringBigInt1);
-//         int num2 = stoi(*stringBigInt2);
-//
-//         if (num1 >= num2)
-//         {
-//             maxString = stringBigInt1;
-//             minString = stringBigInt2;
-//         }
-//
-//         else
-//         {
-//             maxString = stringBigInt2;
-//             minString = stringBigInt1;
-//         }
-//
-//         std::string result = bigInt1.substraction(*maxString, *minString);
-//         return result;
-//     }
-//
-// }
-
 // ----------------------------------------------addition functions----------------------------------------------------
-
-std::string operator+()
-
 
 void addSumDigit(char symbol, int result,
     std::string * resultString, int &counter, std::string &string1, std::string &string2)
@@ -92,7 +49,6 @@ void emptyStringAddition(std::string &string1, std::string &string2,
     {
         if ( result + atoi(&string1.back()) % 10 > 9)
         {
-            // resizeString(resultString, resultLength);
             char newDigit = ( result + (atoi(&string1.back()) % 10) ) + '0';
             *resultString += newDigit;
 
@@ -142,6 +98,7 @@ void fullStringAddition(int &result, std::string &string1, std::string &string2,
     result = 0;
 }
 
+
 std::string BigInt::addition(std::string string1, std::string string2)
 {
     int result = 0;
@@ -177,7 +134,10 @@ std::string BigInt::addition(std::string string1, std::string string2)
 }
 
 
+
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
 
 
 void fullStringSubstraction(int &result, std::string maxString, std::string minString,
@@ -208,31 +168,56 @@ void emptyStringSubstraction(std::string maxString, std::string minString,
     counter--;
 }
 
-std::string BigInt::substraction(std::string maxString, std::string minString)
+// std::string BigInt::substraction(std::string maxString, std::string minString)
+// {
+//     int result = 0;
+//     char symbol;
+//     int resultLength = maxString.length();
+//     std::string * resultString = new std::string[resultLength]{};
+//     int counter = resultLength;
+//
+//     while (counter > 0)
+//     {
+//         if ( !minString.empty() )
+//         {
+//             fullStringSubstraction(result,maxString,minString,counter,symbol,
+//                resultLength,resultString);
+//         }
+//
+//         else
+//         {
+//             fullStringSubstraction(result, maxString, minString,
+//         counter,  symbol, resultLength, resultString);
+//         }
+//
+//     }
+//
+//     std::reverse(resultString->begin(), resultString->end());
+//     return *resultString;
+//     // delete [] result;
+// }
+
+
+
+
+
+// --------------------------------------------owerload operators------------------------------------------------
+
+
+BigInt BigInt::operator+(const BigInt &other)
 {
-    int result = 0;
-    char symbol;
-    int resultLength = maxString.length();
-    std::string * resultString = new std::string[resultLength]{};
-    int counter = resultLength;
+    BigInt sum;
+    sum.stringArray = new std::string;
+    *sum.stringArray = addition(*this->stringArray, *other.stringArray);
+    sum.length = sum.stringArray->length();
+    return sum;
+}
 
-    while (counter > 0)
-    {
-        if ( minString.empty() )
-        {
-            fullStringSubstraction(result,maxString,minString,counter,symbol,
-               resultLength,resultString);
-        }
-
-        else
-        {
-            fullStringSubstraction(result, maxString, minString,
-        counter,  symbol, resultLength, resultString);
-        }
-
-    }
-
-    std::reverse(resultString->begin(), resultString->end());
-    return *resultString;
-    // delete [] result;
+BigInt BigInt::operator-(const BigInt &other)
+{
+    BigInt difference;
+    difference.stringArray = new std::string;
+    *difference.stringArray = addition(*this->stringArray, *other.stringArray);
+    difference.length = difference.stringArray->length();
+    return difference;
 }
