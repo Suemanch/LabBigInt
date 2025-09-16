@@ -2,46 +2,7 @@
 #include <iostream>
 #include "classBigInt.h"
 
-std::string getResult(class BigInt bigInt1, std::string *stringBigInt1, std::string *stringBigInt2, std::string * operation)
-{
 
-    if (*operation == "+" || *operation == "+=")
-    {
-        std::string result = bigInt1.addition(*stringBigInt1, *stringBigInt2);
-        return result;
-    }
-
-    if (*operation == "=")
-    {
-        std::string result = *stringBigInt2;
-        return result;
-    }
-
-    if (*operation == "-=" || *operation == "-")
-    {
-        std::string * maxString;
-        std::string * minString;
-
-        int num1 = stoi(*stringBigInt1);
-        int num2 = stoi(*stringBigInt2);
-
-        if (num1 >= num2)
-        {
-            maxString = stringBigInt1;
-            minString = stringBigInt2;
-        }
-
-        else
-        {
-            maxString = stringBigInt2;
-            minString = stringBigInt1;
-        }
-
-        std::string result = bigInt1.substraction(*maxString, *minString);
-        return result;
-    }
-
-}
 
 // ----------------------------------------------addition functions----------------------------------------------------
 
