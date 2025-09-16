@@ -20,18 +20,7 @@ int main()
 
     // std::stoi(*operation)
 
-    if (*operation == "+")
-    {
-        std::string result = bigInt1.addition(*stringBigInt1, *stringBigInt2);
-        std::cout << result;
-        return 0;
-    }
-
-    else if (*operation == " " && stringBigInt2[0] == "-")
-    {
-        std::string result = "-" + *stringBigInt2;
-        std::cout << result;
-    }
+    bigInt1.getResult(*bigInt1.stringArray,*bigInt2.stringArray,operation);
 
     delete[] stringBigInt1;
     delete[] stringBigInt2;

@@ -2,9 +2,49 @@
 #include <iostream>
 #include "classBigInt.h"
 
-
+// std::string getResult(class BigInt bigInt1, class BigInt bigInt2, std::string * operation)
+// {
+//     if (*operation == "+" || *operation == "+=")
+//     {
+//         std::string result = bigInt1.addition(*bigInt1.stringArray, *bigInt2.stringArray);
+//         return result;
+//     }
+//
+//     if (*operation == "=")
+//     {
+//         std::string result = *bigInt2.stringArray;
+//         return result;
+//     }
+//
+//     if (*operation == "-=" || *operation == "-")
+//     {
+//         std::string * maxString;
+//         std::string * minString;
+//
+//         int num1 = stoi(*stringBigInt1);
+//         int num2 = stoi(*stringBigInt2);
+//
+//         if (num1 >= num2)
+//         {
+//             maxString = stringBigInt1;
+//             minString = stringBigInt2;
+//         }
+//
+//         else
+//         {
+//             maxString = stringBigInt2;
+//             minString = stringBigInt1;
+//         }
+//
+//         std::string result = bigInt1.substraction(*maxString, *minString);
+//         return result;
+//     }
+//
+// }
 
 // ----------------------------------------------addition functions----------------------------------------------------
+
+std::string operator+()
 
 
 void addSumDigit(char symbol, int result,

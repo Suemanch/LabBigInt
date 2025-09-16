@@ -2,18 +2,24 @@
 #ifndef CLASSBIGINT_H
 #define CLASSBIGINT_H
 
-#include <stdlib.h>
-
 class BigInt
 {
+private:
+    std::string addition(std::string string1, std::string string2);
+
+    std::string substraction(std::string string1, std::string string2);
+
+    std::string getResult(std::string string1, std::string string2);
     public:
         int length;
+        int num;
         std::string * stringArray;
 
-        BigInt(std::string * input)
+        explicit BigInt(std::string * input)
         {
             stringArray = input;
-            length = input->length();
+            num = stoi(*stringArray);
+            length = input->size();
         }
 
         BigInt()
@@ -21,58 +27,21 @@ class BigInt
             length = 0;
         }
 
-        std::string addition(std::string string1, std::string string2)
-        {
-            int sum = 0;
-            char symbol;
-            int resultLength = std::max(string1.length(), string2.length());
-            std::string * result = new std::string[resultLength];
-            int counter = resultLength;
+        std::string operator +(class BigInt other); // use it only from class (not from object)
 
-            while (counter > 0)
-            {
-                if (string1.length() == 0 || string2.length() == 0)
-                {
-                    if (string1.length() == 0)
-                    {
-                        *result += atoi(&string2.back()) % 10 + '0';
-                        string2.pop_back();
-                        counter--;
-                    }
-                    else
-                    {
-                        result += atoi(&string1.back()) % 10 + '0';
-                        string1.pop_back();
-                        counter--;
-                    }
+        std::string substraction(class BigInt other);
 
-                }
+        // std::string getResult(std::string string1, std::string string2, std::string * operation);
 
-                else
-                {
-                    sum = atoi(&string1.back()) + atoi(&string2.back()); // get the last digits
 
-                    if (sum > 9)
-                    {
-                        symbol = sum / 10 + '0';
-                        result->insert(counter - 1, &symbol);
-                    }
 
-                    symbol = sum % 10 + '0';
-                    *result += symbol;
-                    counter--;
 
-                    string1.pop_back(); // throw away last symbols - we counted them
-                    string2.pop_back();
-                    sum = 0;
-                }
 
-            }
 
-            std::reverse(result->begin(), result->end());
-            return *result;
-            delete [] result;
-        }
+        // std::string substraction(std::string string1, std::string string2)
+        // {
+        //
+        // }
 
 };
 

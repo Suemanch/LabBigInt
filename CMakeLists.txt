@@ -11,7 +11,7 @@ set(exe_name ${PROJECT_NAME})
 #    add_compile_options(/W4 /WX)
 #endif()
 
-add_library(corelib OBJECT calcBigInt.cpp)
+add_library(corelib OBJECT operationsBigInt.cpp)
 
 add_executable(${exe_name} main.cpp)
 target_link_libraries(${exe_name} PRIVATE corelib)
