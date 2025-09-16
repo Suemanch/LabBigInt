@@ -2,6 +2,47 @@
 #include <iostream>
 #include "classBigInt.h"
 
+std::string getResult(class BigInt bigInt1, std::string *stringBigInt1, std::string *stringBigInt2, std::string * operation)
+{
+
+    if (*operation == "+" || *operation == "+=")
+    {
+        std::string result = bigInt1.addition(*stringBigInt1, *stringBigInt2);
+        return result;
+    }
+
+    if (*operation == "=")
+    {
+        std::string result = *stringBigInt2;
+        return result;
+    }
+
+    if (*operation == "-=" || *operation == "-")
+    {
+        std::string * maxString;
+        std::string * minString;
+
+        int num1 = stoi(*stringBigInt1);
+        int num2 = stoi(*stringBigInt2);
+
+        if (num1 >= num2)
+        {
+            maxString = stringBigInt1;
+            minString = stringBigInt2;
+        }
+
+        else
+        {
+            maxString = stringBigInt2;
+            minString = stringBigInt1;
+        }
+
+        std::string result = bigInt1.substraction(*maxString, *minString);
+        return result;
+    }
+
+}
+
 // ----------------------------------------------addition functions----------------------------------------------------
 
 
@@ -138,7 +179,7 @@ std::string BigInt::addition(std::string string1, std::string string2)
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
-void fullStringSubstraction(int &result, std::string &maxString, std::string &minString,
+void fullStringSubstraction(int &result, std::string maxString, std::string minString,
     int &counter, char &symbol, int &resultLength, std::string * resultString)
 {
     if ( atoi(&minString.back()) % 10 > atoi(&maxString.back()) % 10 && maxString[maxString.size() - 2]) // under diggit -> bigger than upper
@@ -148,7 +189,7 @@ void fullStringSubstraction(int &result, std::string &maxString, std::string &mi
     }
     else
     {
-        resultString +=  (  (atoi(&maxString.back()) % 10) - atoi(&minString.back()) ) + '0';
+        *resultString +=  (  (atoi(&maxString.back()) % 10) - atoi(&minString.back()) ) + '0';
     }
 
     counter--;
@@ -157,7 +198,7 @@ void fullStringSubstraction(int &result, std::string &maxString, std::string &mi
 }
 
 
-void emptyStringSubstraction(std::string &maxString, std::string &minString,
+void emptyStringSubstraction(std::string maxString, std::string minString,
     int &result, std::string * resultString, char &symbol, int &counter )
 {
     *resultString += atoi(&maxString.back()) % 10 + '0';
