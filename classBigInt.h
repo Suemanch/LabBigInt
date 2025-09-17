@@ -33,7 +33,21 @@ private:
 
     void fullStringAddition(std::string &string1, std::string &string2);
 
-    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+    // -------------------------------------multiplication functions----------------------------------------------------------
+
+    std::string *multiplication(std::string string1, std::string string2);
+
+    // void emptyStringAddition(std::string &string1, std::string &string2);
+    //
+    // void addSumDigit(std::string &string1, std::string &string2);
+    //
+    // void fullStringAddition(std::string &string1, std::string &string2);
+
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     public:
         size_t length = 0;
@@ -59,18 +73,10 @@ private:
 
         BigInt operator-(const BigInt &other);
 
+        BigInt& operator++();
 
-    // std::string getResult(std::string string1, std::string string2, std::string * operation);
+        // BigInt BigInt::operator*(const BigInt &other);
 
-
-
-
-
-
-        // std::string substraction(std::string string1, std::string string2)
-        // {
-        //
-        // }
 
 };
 
