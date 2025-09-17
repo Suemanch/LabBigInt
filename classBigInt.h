@@ -5,33 +5,62 @@
 class BigInt
 {
 private:
-    std::string addition(std::string string1, std::string string2);
+    char symbol{};
+    std::string * resultString = nullptr;
+    int resultInt = 0;
+    size_t resultLength = 0;
+    size_t counter = 0; // can't be < 0
 
-    std::string substraction(std::string string1, std::string string2);
+    // -------------------------------------substraction functions------------------------------------------------------
 
-    std::string getResult(std::string string1, std::string string2);
+    void fullStringSubstraction(std::string &maxString, std::string &minString);
+
+    void emptyStringSubstraction(std::string &maxString, std::string &minString);
+
+    std::string *substraction(std::string maxString, std::string minString);
+
+
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+    // -------------------------------------addition functions----------------------------------------------------------
+
+    std::string *addition(std::string string1, std::string string2);
+
+    void emptyStringAddition(std::string &string1, std::string &string2);
+
+    void addSumDigit(std::string &string1, std::string &string2);
+
+    void fullStringAddition(std::string &string1, std::string &string2);
+
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
     public:
-        int length;
-        int num;
-        std::string * stringArray;
+        size_t length = 0;
+        int num = 0;
+        std::string * stringArray = nullptr;
 
-        explicit BigInt(std::string * input)
+        explicit BigInt(std::string &input) : length(input.size())
         {
-            stringArray = input;
+            stringArray = new std::string[length];
+            *stringArray = input;
             num = stoi(*stringArray);
-            length = input->size();
         }
 
-        BigInt()
+        BigInt() = default;
+
+        ~BigInt()
         {
-            length = 0;
+            // delete stringArray;
         }
 
-        std::string operator +(class BigInt other); // use it only from class (not from object)
 
-        std::string substraction(class BigInt other);
+        BigInt operator+(const BigInt &other);
 
-        // std::string getResult(std::string string1, std::string string2, std::string * operation);
+        BigInt operator-(const BigInt &other);
+
+
+    // std::string getResult(std::string string1, std::string string2, std::string * operation);
 
 
 
