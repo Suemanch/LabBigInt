@@ -66,34 +66,55 @@ void BigInt :: emptyStringAddition(std::string &string1, std::string &string2)
 
 void BigInt :: fullStringAddition(std::string &string1, std::string &string2)
 {
-    resultInt += std::stoi(&string2.back()) + std::stoi(&string1.back()); // get the last digits
-
-    if (resultInt > 9)
+    if (std::stoi(string1) > 0 and std::stoi(string2) > 0)
     {
-        if (resultString -> length() == resultLength) // then we create a new resize str - bigger than old
+        resultInt += std::stoi(&string2.back()) + std::stoi(&string1.back()); // get the last digits
+
+        if (resultInt > 9)
         {
-            symbol = resultInt + std::stoi(&string1.back()) % 10 + '0';
-
-            if (string1.empty())
+            if (resultString -> length() == resultLength) // then we create a new resize str - bigger than old
             {
-                *resultString += symbol;
-            }
-            if (string2.empty())
-            {
-                *resultString += symbol;
+                symbol = resultInt + std::stoi(&string1.back()) % 10 + '0';
+
+                if (string1.empty())
+                {
+                    *resultString += symbol;
+                }
+                if (string2.empty())
+                {
+                    *resultString += symbol;
+                }
+
+                resultLength += 1;
+
             }
 
-            resultLength += 1;
-
+            addSumDigit(string1, string2);
+            resultInt = resultInt / 10; // get ten for next digit
+            return;
         }
 
         addSumDigit(string1, string2);
-        resultInt = resultInt / 10; // get ten for next digit
-        return;
+        resultInt = 0;
     }
 
-    addSumDigit(string1, string2);
-    resultInt = 0;
+    else
+    {
+        if (string1[0] == '-' and string2[0] == '-')
+        {
+            string1 = string1.erase(0,1);
+            string2 = string2.erase(0,1);
+
+            resultString = addition(string1, string2);
+            resultString->insert(0,"-");
+            std::reverse(resultString->begin(), resultString->begin());
+            //reverse
+        }
+
+
+
+    }
+
 }
 
 
@@ -133,6 +154,9 @@ std::string *BigInt::addition(std::string string1, std::string string2)
 
 
 
+
+
+// ----------------------------------------------substraction functions-------------------------------------------------
 
 void BigInt :: fullStringSubstraction(std::string &maxString, std::string &minString)
 {
@@ -185,7 +209,7 @@ std::string *BigInt::substraction(std::string maxString, std::string minString)
     return resultString;
 }
 
-
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
 
@@ -207,3 +231,22 @@ BigInt BigInt::operator-(const BigInt &other)
     difference.length = difference.stringArray->length();
     return difference;
 }
+
+BigInt& BigInt::operator++()
+{
+    this->num = this->num + 1;
+    return *this;
+}
+
+// BigInt BigInt::operator*(const BigInt &other)
+// {
+//     BigInt mul;
+//     mul.stringArray = multiplication(*this->stringArray, *other.stringArray);
+//     mul.length = mul.stringArray->length();
+//     return mul;
+// }
+
+
+
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
