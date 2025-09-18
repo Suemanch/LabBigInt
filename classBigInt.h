@@ -8,8 +8,18 @@ private:
     char symbol{};
     std::string * resultString = nullptr;
     int resultInt = 0;
+    int resultDigit = 1; // mul
     size_t resultLength = 0;
     size_t counter = 0; // can't be < 0
+
+    // ------------------------------------------------helpful functions------------------------------------------------
+
+    std::string getMaxStr(std::string str1, std::string str2);
+
+    std::string getMinStr(std::string str1, std::string str2);
+
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 
     // -------------------------------------substraction functions------------------------------------------------------
 
@@ -41,7 +51,7 @@ private:
 
     std::string *multiplication(std::string string1, std::string string2);
 
-    // void emptyStringAddition(std::string &string1, std::string &string2);
+    std::string fullStringMultiplication(std::string maxString, std::string minString);
     //
     // void addSumDigit(std::string &string1, std::string &string2);
     //
@@ -68,14 +78,13 @@ private:
             // delete stringArray;
         }
 
-
         BigInt operator+(const BigInt &other);
 
         BigInt operator-(const BigInt &other);
 
         BigInt& operator++();
 
-        // BigInt BigInt::operator*(const BigInt &other);
+        BigInt operator*(const BigInt &other);
 
 
 };
