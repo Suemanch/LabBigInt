@@ -26,6 +26,9 @@ int main()
     ++bigInt1;
     std::cout << "++" << *bigInt1.stringArray << ": " << bigInt1.num << "\n";
 
+    result = bigInt1 * bigInt2;
+    std::cout << *bigInt1.stringArray << " * " << *bigInt2.stringArray << ": " << *result.stringArray << "\n";
+
     // delete stringBigInt1;
     // delete stringBigInt2;
 
