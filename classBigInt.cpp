@@ -27,6 +27,24 @@ std::string BigInt :: getMinStr(std::string str1, std::string str2)
     }
 }
 
+int BigInt::countZeros(std::string str1)
+{
+    int count = 0;
+    for (int i = str1.length() - 1; i >= 0; i--)
+    {
+        if (str1[i] == '0')
+        {
+            count++;
+        }
+
+        if (str1[i] != '0')
+        {
+            return count;
+        }
+
+    }
+    return 0;
+}
 
 // ----------------------------------------------addition functions----------------------------------------------------
 
@@ -203,15 +221,28 @@ void BigInt :: fullStringSubstraction(std::string &maxString, std::string &minSt
 {
     if (maxString[0] != '-' and minString[0] != '-')
     {
-        if (std::stoi(&minString.back()) % 10 > std::stoi(&maxString.back()) % 10 && maxString[maxString.size() - 2])
+        using std::stoi;
+
+        if (stoi(&minString.back()) % 10 > stoi(&maxString.back()) % 10 && maxString[maxString.size() - 2])
             // under diggit -> bigger than upper
         {
-            *resultString += (((std::stoi(&maxString.back()) % 10) + 10) - std::stoi(&minString.back()) + '0');
+            *resultString += (((stoi(&maxString.back()) % 10) + 10) - stoi(&minString.back()) + '0');
             maxString[maxString.size() - 2] = (std::stoi(&maxString[maxString.size() - 2]) % 10 - 1) + '0';
             // minus ten from next digit
-        } else
+
+            if (minString.empty())
+            {
+               maxString = stoi(&maxString.back()) - 1 + '0';
+                if (maxString.back() == '0')
+                {
+                    maxString.pop_back();
+                }
+            }
+        }
+
+        else
         {
-            *resultString += ((std::stoi(&maxString.back()) % 10) - std::stoi(&minString.back())) + '0';
+            *resultString += ((stoi(&maxString.back()) % 10) - stoi(&minString.back())) + '0';
         }
 
         counter--;
@@ -230,7 +261,7 @@ void BigInt :: fullStringSubstraction(std::string &maxString, std::string &minSt
         }
 
         else
-        {
+        {   // TODO вынести одинаковый код из if-ов
             if (minString[0] == '-' and maxString[0] != '-')
             {
                 minString = minString.erase(0,1);
@@ -291,8 +322,9 @@ std::string *BigInt::substraction(std::string maxString, std::string minString)
 std::string BigInt::fullStringMultiplication(std::string maxString, std::string lastUnderDigit)
 {
     resultLength = maxString.length();
-    counter = resultLength;
+    int counter = resultLength;
     resultString = new std::string;
+    resultDigit = 0;
 
     while (counter > 0)
     {
@@ -300,23 +332,29 @@ std::string BigInt::fullStringMultiplication(std::string maxString, std::string 
 
         if (resultDigit > 9)
         {
-            *resultString = std::stoi(&maxString.back()) * std::stoi(&lastUnderDigit.back()) + resultDigit % 10 + '0';
-
-            // counter--;
+            *resultString += resultDigit % 10 + '0';
+            resultDigit /= 10;
+            counter--;
+            maxString.pop_back();
         }
 
-        *resultString += resultDigit % 10 + '0';
-        counter--;
+        else
+        {
+            *resultString += resultDigit % 10 + '0';
+            resultDigit = 0; // we don't use this for next digit cause <= 9
+            counter--;
+            maxString.pop_back();
+        }
+
+        if (maxString.empty() && resultDigit > 0)
+        {
+            *resultString += resultDigit + '0';
+        }
+
     }
 
+    std::reverse(resultString->begin(), resultString->end());
     return *resultString;
-
-    // if (resultInt > resultLength)
-
-
-
-
-
 
 }
 
@@ -335,13 +373,15 @@ std::string *BigInt::multiplication(std::string string1, std::string string2)
     while (counter > 0)
     {
 
-        if ( !string1.empty() and !string2.empty() )
+        if ( !minString.empty() and !maxString.empty() )
         {
             lastUnderDigit = minString.back();
-            resultInt += std::stoi(fullStringMultiplication(maxString,lastUnderDigit));
+            countOfZeros = countZeros(minString);
+            resultInt += std::stoi(fullStringMultiplication(maxString,lastUnderDigit)) * pow(10,resultLength - counter);;
             minString.pop_back();
             counter--;
         }
+        // TODO удали комменты !!!
         else
         {
             // fullStringAddition(string1,string2);
@@ -353,6 +393,8 @@ std::string *BigInt::multiplication(std::string string1, std::string string2)
         }
 
     }
+    *resultString = std::to_string(resultInt);
+    return resultString;
 }
 
 
