@@ -8,7 +8,8 @@ private:
     char symbol{};
     std::string * resultString = nullptr;
     int resultInt = 0;
-    int resultDigit = 1; // mul
+    int resultDigit = 0; // mul
+    int countOfZeros = 0; // mul
     size_t resultLength = 0;
     size_t counter = 0; // can't be < 0
 
@@ -52,6 +53,8 @@ private:
     std::string *multiplication(std::string string1, std::string string2);
 
     std::string fullStringMultiplication(std::string maxString, std::string minString);
+
+    int countZeros(std::string str1);
     //
     // void addSumDigit(std::string &string1, std::string &string2);
     //
@@ -66,7 +69,7 @@ private:
 
         explicit BigInt(std::string &input) : length(input.size())
         {
-            stringArray = new std::string[length];
+            stringArray = new std::string;
             *stringArray = input;
             num = stoi(*stringArray);
         }
@@ -75,7 +78,7 @@ private:
 
         ~BigInt()
         {
-            // delete stringArray;
+       //     delete stringArray;
         }
 
         BigInt operator+(const BigInt &other);
