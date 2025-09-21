@@ -8,6 +8,7 @@ private:
     char symbol{};
     std::string * resultString = nullptr;
     int resultInt = 0;
+    int upperDigit = 0; // sub
     int resultDigit = 0; // mul
     int countOfZeros = 0; // mul
     size_t resultLength = 0;
