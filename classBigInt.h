@@ -7,12 +7,14 @@ class BigInt
 private:
     char symbol{};
     std::string * resultString = nullptr;
-    int resultInt = 0;
-    int upperDigit = 0; // sub
-    int resultDigit = 0; // mul
-    int countOfZeros = 0; // mul
     size_t resultLength = 0;
     size_t counter = 0; // can't be < 0
+    int resultInt = 0;
+
+    int borrow; // sub
+
+    int resultDigit = 0; // mul
+    int countOfZeros = 0; // mul
 
     // ------------------------------------------------helpful functions------------------------------------------------
 
@@ -25,9 +27,6 @@ private:
 
     // -------------------------------------substraction functions------------------------------------------------------
 
-    void fullStringSubstraction(std::string &maxString, std::string &minString);
-
-    void emptyStringSubstraction(std::string &maxString, std::string &minString);
 
     std::string *substraction(std::string maxString, std::string minString);
 
@@ -54,12 +53,6 @@ private:
     std::string *multiplication(std::string string1, std::string string2);
 
     std::string fullStringMultiplication(std::string maxString, std::string minString);
-
-    int countZeros(std::string str1);
-    //
-    // void addSumDigit(std::string &string1, std::string &string2);
-    //
-    // void fullStringAddition(std::string &string1, std::string &string2);
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
