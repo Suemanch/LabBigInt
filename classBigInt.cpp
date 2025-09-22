@@ -27,19 +27,6 @@ std::string BigInt :: getMinStr(std::string str1, std::string str2)
     }
 }
 
-int BigInt::countZeros(std::string str1)
-{
-    int count = 0;
-    for (int i = str1.length() - 1; i >= 0; i--)
-    {
-        if (str1[i] == '0')
-        {
-            count++;
-        }
-    }
-    return count;
-}
-
 // ----------------------------------------------addition functions----------------------------------------------------
 
 void BigInt :: addSumDigit(std::string &string1, std::string &string2)
@@ -110,19 +97,6 @@ void BigInt :: fullStringAddition(std::string &string1, std::string &string2)
 
         if (resultInt > 9)
         {
-            // TODO УДАЛИ КОММЕНТ
-            // if (resultString -> length() == resultLength) // then we create a new resize str - bigger than old
-            // {
-            //     symbol = resultInt + std::stoi(&string1.back()) % 10 + '0';
-            //
-            //     if (string1.empty() || string2.empty())
-            //     {
-            //         *resultString += symbol;
-            //     }
-            //
-            //     resultLength += 1;
-            // }
-
             addSumDigit(string1, string2);
             resultInt = resultInt / 10; // get ten for next digit
             return;
@@ -213,126 +187,32 @@ std::string *BigInt::addition(std::string string1, std::string string2)
 
 // ----------------------------------------------substraction functions-------------------------------------------------
 
-void BigInt :: fullStringSubstraction(std::string &maxString, std::string &minString)
-{
-    using std::stol;
-
-    int maxStrLastDigit = stol(&maxString.back()) % 10;
-    int minStrLastDigit = stol(&minString.back()) % 10;
-
-    if (maxString[0] != '-' and minString[0] != '-')
-    {
-        if (minStrLastDigit > maxStrLastDigit && maxString.length() > 1)
-            // under diggit -> bigger than upper
-        {
-
-            for (int i = 1; i <= maxString.length(); i++)
-            {
-                symbol = maxString[maxString.length() - i];
-                if (symbol != '0')
-                {
-                    int temp = ( maxString[maxString.length() - i] ) - '0';
-                    maxString[maxString.length() - i] = (temp - 1) + '0';
-                    *resultString += ( (maxStrLastDigit + 10) - minStrLastDigit + '0'); // minus ten from next digit
-                    break;
-                }
-            };
-
-            if (minString.empty())
-            {
-                maxString = maxStrLastDigit - 1 + '0';
-                if (maxString.back() == '0')
-                {
-                    maxString.pop_back();
-                }
-            }
-        }
-
-        else
-        {
-            *resultString += (maxStrLastDigit - minStrLastDigit) + '0';
-        }
-
-        counter--;
-        minString.pop_back();
-        maxString.pop_back();
-
-        if (resultString->length() > 1 and maxString.empty() and minString.empty())
-        {
-            if ( countZeros(*resultString) == resultLength )
-            {
-                while (resultString->length() != 1)
-                {
-                    resultString->pop_back();
-                }
-
-                return;
-            }
-
-            while (resultString->back() == '0')
-            {
-                resultString->pop_back();
-            }
-        }
-    }
-
-    else
-    {
-        if ( abs(stol(minString)) < abs(stol(maxString)) )// 10 , -20
-        {
-            minString = minString.erase(0,1);
-            resultString = addition(minString, maxString);
-            std::reverse(resultString->begin(), resultString->end());
-        }
-
-        else
-        {
-            minString = minString.erase(0,1);
-            resultString = addition(maxString, minString);
-            // resultString->insert(0,"-");
-            std::reverse(resultString->begin(), resultString->end());
-        }
-    }
-
-}
-
-void BigInt :: emptyStringSubstraction(std::string &maxString, std::string &minString)
-{
-    if (maxString != "0")
-    {
-        *resultString += std::stol(&maxString.back()) % 10 + '0';
-    }
-
-    if (!maxString.empty())
-    {
-        maxString.pop_back();
-    }
-
-    if (!minString.empty())
-    {
-        minString.pop_back();
-    }
-    counter--;
-}
-
 std::string *BigInt::substraction(std::string maxString, std::string minString)
 {
     resultLength = maxString.length();
     resultString = new std::string;
     counter = resultLength;
+    borrow = 0;
 
-    while (counter > 0)
+    minString = std::string(maxString.length() - minString.length(), '0') + minString; //align to length
+
+    for (int i = resultLength - 1; i >= 0; i--)
     {
-        if ( !maxString.empty() and !minString.empty() )
+        int maxStrLastDigit = maxString[i] - '0';
+        int minStrLastDigit = minString[i] - '0';
+
+        if ( (maxStrLastDigit - borrow) - minStrLastDigit >= 0)
         {
-            fullStringSubstraction(maxString,minString);
+            *resultString += std::to_string((maxStrLastDigit - borrow - minStrLastDigit) + '0');
+            borrow = 0;
         }
 
         else
         {
-            emptyStringSubstraction(maxString,minString);
+            maxStrLastDigit += 10;
+            *resultString += std::to_string((maxStrLastDigit - borrow - minStrLastDigit) + '0');
+            borrow = 1;
         }
-
     }
 
     std::reverse(resultString->begin(), resultString->end());
@@ -443,7 +323,6 @@ BigInt BigInt::operator-(const BigInt &other)
 
     difference.length = difference.stringArray->length();
     return difference;
-
 }
 
 BigInt& BigInt::operator++()
