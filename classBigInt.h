@@ -18,18 +18,16 @@ private:
 
     // ------------------------------------------------helpful functions------------------------------------------------
 
-    std::string getMaxStr(std::string str1, std::string str2);
+    std::string getMaxStrByLen(std::string str1, std::string str2);
 
-    std::string getMinStr(std::string str1, std::string str2);
+    std::string getMinStrByLen(std::string str1, std::string str2);
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
-    // -------------------------------------substraction functions------------------------------------------------------
-
+    // ----------------------------------------------substraction functions---------------------------------------------
 
     std::string *substraction(std::string maxString, std::string minString);
-
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -38,17 +36,11 @@ private:
 
     std::string *addition(std::string string1, std::string string2);
 
-    void emptyStringAddition(std::string &string1, std::string &string2);
-
-    void addSumDigit(std::string &string1, std::string &string2);
-
-    void fullStringAddition(std::string &string1, std::string &string2);
-
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
 
-    // -------------------------------------multiplication functions----------------------------------------------------------
+    // -------------------------------------multiplication functions----------------------------------------------------
 
     std::string *multiplication(std::string string1, std::string string2);
 
