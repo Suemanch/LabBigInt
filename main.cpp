@@ -17,14 +17,14 @@ int main()
     BigInt bigInt2(stringBigInt2);
     BigInt result;
 
-    int sum;
-    int sub;
+    // int sum;
+    // int sub;
 
     result = bigInt1 + bigInt2;
-    std::cout << *bigInt1.stringArray << " + " << *bigInt2.stringArray << ": " << *result.stringArray << "\n";
+    std::cout << bigInt1.stringArray << " + " << bigInt2.stringArray << ": " << result.stringArray << "\n";
 
     result = bigInt1 - bigInt2;
-    std::cout << *bigInt1.stringArray << " - " << *bigInt2.stringArray << ": " << *result.stringArray << "\n";
+    std::cout << bigInt1.stringArray << " - " << bigInt2.stringArray << ": " << result.stringArray << "\n";
 
     // for (int i = -1000; i < 1000; i++)
     // {
@@ -53,8 +53,8 @@ int main()
     ++bigInt1;
     std::cout << "++" << *bigInt1.stringArray << ": " << bigInt1.stringArray << "\n";
 
-    result = bigInt1 * bigInt2;
-    std::cout << *bigInt1.stringArray << " * " << *bigInt2.stringArray << ": " << *result.stringArray << "\n";
+    // result = bigInt1 * bigInt2;
+    // std::cout << *bigInt1.stringArray << " * " << *bigInt2.stringArray << ": " << *result.stringArray << "\n";
 
     // delete stringBigInt1;
     // delete stringBigInt2;
