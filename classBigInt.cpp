@@ -3,7 +3,7 @@
 #include <iostream>
 #include "classBigInt.h"
 
-std::string BigInt :: getMaxStrByLen(std::string str1, std::string str2)
+char * BigInt :: getMaxStrByLen(char * str1, char * str2)
 {
     if ( abs(std::stoi(str1)) == std::max(abs(std::stoi(str1)), abs(std::stoi(str2)) ))
     {
@@ -15,7 +15,7 @@ std::string BigInt :: getMaxStrByLen(std::string str1, std::string str2)
     }
 }
 
-std::string BigInt :: getMinStrByLen(std::string str1, std::string str2)
+char * BigInt :: getMinStrByLen(char * str1, char * str2)
 {
     if ( abs(std::stoi(str1)) == std::min(abs(std::stoi(str1)), abs(std::stoi(str2)) ))
     {
@@ -29,46 +29,54 @@ std::string BigInt :: getMinStrByLen(std::string str1, std::string str2)
 
 // ----------------------------------------------addition functions----------------------------------------------------
 
-std::string *BigInt::addition(std::string maxString, std::string minString)
+char * BigInt::addition(char *str1, char * str2)
 {
+    char * maxString = str1;
+    char * minString = str2;
 
-    resultLength_ = std::max(maxString.length(), minString.length());
-    resultString_ = new std::string;
+    resultLength_ = std::max(std::strlen(maxString), std::strlen(minString));
+    resultString_ = new char[resultLength_ + 1];
+    memset(resultString_, 0, resultLength_ + 2);
     counter_ = resultLength_;
     borrow_ = 0;
 
-    if (maxString.length() < minString.length())
+    if (std::strlen(maxString) < std::strlen(minString))
     {
-        maxString = std::string(minString.length() - maxString.length(), '0') + maxString;
+        maxString = (std::string(std::strlen(minString) - std::strlen(maxString), '0') + maxString).data();
     }
 
-    if (minString.length() < maxString.length())
+    if (std::strlen(minString) < std::strlen(maxString))
     {
-        minString = std::string(maxString.length() - minString.length(), '0') + minString;
+        minString = (std::string(std::strlen(maxString) - std::strlen(minString), '0') + minString).data();
     }
 
+    int resultIndex = 0;
 
     for (int i = resultLength_ - 1; i >= 0; i--)
     {
         int maxStrLastDigit = maxString[i] - '0';
         int minStrLastDigit = minString[i] - '0';
+        int sum = maxStrLastDigit + borrow_ + minStrLastDigit;
 
-        if ( (maxStrLastDigit + borrow_ + minStrLastDigit) > 9)
+        if (sum > 9)
         {
-            *resultString_ += std::to_string((maxStrLastDigit + borrow_ + minStrLastDigit) % 10);
+            resultString_[resultIndex++] = ( sum % 10 ) + '0';
             borrow_ = (maxStrLastDigit + borrow_ + minStrLastDigit) / 10;
         }
 
         else
         {
-            *resultString_ += std::to_string(maxStrLastDigit + borrow_ + minStrLastDigit);
+            resultString_[resultIndex++] = sum  + '0';
             borrow_ = 0;
         }
     }
 
-    *resultString_ += std::to_string(borrow_);
+    if (borrow_ != 0)
+    {
+        resultString_[resultIndex++] = borrow_ + '0';
+    }
 
-    std::reverse(resultString_->begin(), resultString_->end());
+    std::reverse(resultString_, resultString_ + strlen(resultString_));
     return resultString_;
 }
 
@@ -77,16 +85,17 @@ std::string *BigInt::addition(std::string maxString, std::string minString)
 
 // ----------------------------------------------substraction functions-------------------------------------------------
 
-std::string *BigInt::substraction(std::string maxString, std::string minString)
+char *BigInt::substraction(char *maxString, char * minString)
 {
-    resultLength_ = std::max(maxString.length(), minString.length());
-    resultString_ = new std::string;
+    resultLength_ = std::max(std::strlen(maxString), std::strlen(minString));
+    resultString_ = new char[resultLength_];
+    memset(resultString_, 0, resultLength_ + 2);
     counter_ = resultLength_;
     borrow_ = 0;
 
     // std::string maxString = std::max()
 
-    minString = std::string(maxString.length() - minString.length(), '0') + minString; //align to length
+    minString = (std::string(strlen(maxString)- strlen(minString), '0') + minString).data(); //align to length
 
     for (int i = resultLength_ - 1; i >= 0; i--)
     {
@@ -95,19 +104,19 @@ std::string *BigInt::substraction(std::string maxString, std::string minString)
 
         if ( (maxStrLastDigit - borrow_) - minStrLastDigit >= 0)
         {
-            *resultString_ += std::to_string(maxStrLastDigit - borrow_ - minStrLastDigit);
+            resultString_ += static_cast<char>(maxStrLastDigit - borrow_ - minStrLastDigit);
             borrow_ = 0;
         }
 
         else
         {
             maxStrLastDigit += 10;
-            *resultString_ += std::to_string(maxStrLastDigit - borrow_ - minStrLastDigit);
+            resultString_ += (maxStrLastDigit - borrow_ - minStrLastDigit) + '0';
             borrow_ = 1;
         }
     }
 
-    std::reverse(resultString_->begin(), resultString_->end());
+    std::reverse(resultString_, resultString_ + strlen(resultString_));
     return resultString_;
 }
 
@@ -117,71 +126,21 @@ std::string *BigInt::substraction(std::string maxString, std::string minString)
 
 //--------------------------------------------------multiplication functions--------------------------------------------
 
-std::string BigInt::fullStringMultiplication(std::string maxString, std::string lastUnderDigit)
-{
-    resultLength_ = maxString.length();
-    int counter = resultLength_;
-    resultString_ = new std::string;
-    resultDigit_ = 0;
-
-    while (counter > 0)
-    {
-        resultDigit_ += std::stoi(&maxString.back()) * std::stoi(&lastUnderDigit.back());
-
-        if (resultDigit_ > 9)
-        {
-            *resultString_ += resultDigit_ % 10 + '0';
-            resultDigit_ /= 10;
-            counter--;
-            maxString.pop_back();
-        }
-
-        else
-        {
-            *resultString_ += resultDigit_ % 10 + '0';
-            resultDigit_ = 0; // we don't use this for next digit cause <= 9
-            counter--;
-            maxString.pop_back();
-        }
-
-        if (maxString.empty() && resultDigit_ > 0)
-        {
-            *resultString_ += resultDigit_ + '0';
-        }
-
-    }
-
-    std::reverse(resultString_->begin(), resultString_->end());
-    return *resultString_;
-
-}
-
-
-std::string *BigInt::multiplication(const std::string &string1, const std::string &string2)
-{
-    resultInt_ = 0;
-    resultLength_ = std::max(string1.length(), string2.length());
-    counter_ = resultLength_;
-    resultString_ = new std::string;
-
-    std::string maxString = getMaxStrByLen(string1,string2);
-    std::string minString = getMinStrByLen(string1,string2);
-
-    std::string lastUnderDigit;
-
-    while (counter_ > 0)
-    {
-        if ( !minString.empty() and !maxString.empty() )
-        {
-            lastUnderDigit = minString.back();
-            resultInt_ += std::stoi(fullStringMultiplication(maxString,lastUnderDigit)) * pow(10,resultLength - counter);;
-            minString.pop_back();
-            counter_--;
-        }
-    }
-    *resultString_ = std::to_string(resultInt_);
-    return resultString_;
-}
+// char *BigInt::multiplication(char *string1, char *string2)
+// {
+//     resultInt_ = 0;
+//     resultLength_ = std::max(std::strlen(string1), std::strlen(string2));
+//     counter_ = resultLength_;
+//     resultString_ = new char[resultLength_];
+//
+//     const char * maxString = getMaxStrByLen(string1,string2);
+//     const char * minString = getMinStrByLen(string1,string2);
+//
+//     // char lastUnderDigit;
+//     //
+//     // resultString_ = std::to_string(resultInt_);
+//     // return resultString_;
+// }
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -192,39 +151,39 @@ BigInt BigInt::operator+(const BigInt &other)
 {
     BigInt sum;
 
-    std::string maxString = getMaxStrByLen(*this->stringArray,*other.stringArray);
-    std::string minString = getMinStrByLen(*this->stringArray,*other.stringArray);
+    char * maxString = getMaxStrByLen(this->stringArray,other.stringArray);
+    char * minString = getMinStrByLen(this->stringArray,other.stringArray);
 
     if (maxString[0] == '-' and minString[0] != '-')
     {
-        maxString.erase(0,1);
+        maxString[0] = ' '; // erase "-"
         sum.stringArray = substraction(maxString, minString);
-        sum.stringArray->insert(0,"-");
-        sum.length = sum.stringArray->length();
+        sum.minus_ = 1;
+        sum.length = strlen(sum.stringArray);
         return sum;
     }
 
     if (maxString[0] != '-' and minString[0] == '-')
     {
-        minString.erase(0,1);
+        maxString[0] = ' '; // erase "-"
         sum.stringArray = substraction(maxString, minString);
-        sum.length = sum.stringArray->length();
+        sum.length = strlen(sum.stringArray);
         return sum;
     }
 
     if (minString[0] == '-' and maxString[0] == '-')
     {
-        minString.erase(0,1);
-        maxString.erase(0,1);
+        minString[0] = ' ';
+        maxString[0] = ' ';
         sum.stringArray = addition(maxString, minString);
-        sum.stringArray->insert(0,"-");
-        sum.length = sum.stringArray->length();
+        sum.minus_ = 1;
+        sum.length = strlen(sum.stringArray);
         return sum;
     }
 
     sum.stringArray = addition(maxString, minString);
 
-    sum.length = sum.stringArray->length();
+    sum.length = strlen(sum.stringArray);
     return sum;
 }
 
@@ -234,44 +193,45 @@ BigInt BigInt::operator-(const BigInt &other)
 
     this->num_ = 1;
 
-    std::string maxString = getMaxStrByLen(*this->stringArray, *other.stringArray);
-    std::string minString = getMinStrByLen(*this->stringArray, *other.stringArray);
+    std::string maxString = getMaxStrByLen(this->stringArray, other.stringArray);
+    std::string minString = getMinStrByLen(this->stringArray, other.stringArray);
 
-    if (*this->stringArray == maxString)
+    if (this->stringArray == maxString)
     {
-        if (other.stringArray[0][0] == '-')
+        if (other.stringArray[0] == '-')
         {
-            difference.stringArray = addition(*this->stringArray, *other.stringArray);
-            difference.length = difference.stringArray->length();
+            difference.stringArray = addition(this->stringArray, other.stringArray);
+            difference.length = strlen(difference.stringArray);
             return difference;
         }
 
-        difference.stringArray = substraction(*other.stringArray, *this->stringArray);
-        difference.stringArray->insert(0,"-");
+        difference.stringArray = substraction(other.stringArray, this->stringArray);
+        difference.minus_ = 1;
     }
 
     else
     {
-        difference.stringArray = substraction(*this->stringArray, *other.stringArray);
+        difference.stringArray = substraction(this->stringArray, other.stringArray);
     }
 
-    difference.length = difference.stringArray->length();
+    difference.length = strlen(difference.stringArray);
     return difference;
 }
 
 BigInt& BigInt::operator++()
 {
     BigInt result;
-    result.stringArray = addition(*this->stringArray,"1");
+    char minString[2] = "1";
+    result.stringArray = addition(this->stringArray,minString);
     return result;
 }
 
-BigInt BigInt::operator*(const BigInt &other)
-{
-    BigInt mul;
-    mul.stringArray = multiplication(*this->stringArray, *other.stringArray);
-    mul.length = mul.stringArray->length();
-    return mul;
-}
+// BigInt BigInt::operator*(const BigInt &other)
+// {
+//     BigInt mul;
+//     mul.stringArray = multiplication(this->stringArray, other.stringArray);
+//     mul.length = strlen(mul.stringArray);
+//     return mul;
+// }
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
