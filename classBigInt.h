@@ -6,10 +6,11 @@ class BigInt
 {
 private:
     char symbol_{};
-    std::string * resultString_ = nullptr; // избавиться от string и заменить char*
+    char * resultString_ = nullptr;
     size_t resultLength_ = 0;
     size_t counter_ = 0; // can't be < 0
     int resultInt_ = 0;
+    int minus_ = 0; // if BigInt < 0 --> minus = 1
 
     int num_ = 0; // 1st or 2nd num
     int borrow_; // sub
@@ -19,45 +20,37 @@ private:
 
     // ------------------------------------------------helpful functions------------------------------------------------
 
-    std::string getMaxStrByLen(std::string str1, std::string str2);
-
-    std::string getMinStrByLen(std::string str1, std::string str2);
-
-    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
-    // ----------------------------------------------substraction functions---------------------------------------------
-
-    std::string *substraction(std::string maxString, std::string minString);
+    char * getMaxStrByLen(char *str1, char *str2);
+    char * getMinStrByLen(char *str1, char *str2);
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+    // ----------------------------------------------operation functions------------------------------------------------
 
-    // -------------------------------------addition functions----------------------------------------------------------
-
-    std::string *addition(std::string string1, std::string string2);
+    char *substraction(char * maxString, char * minString);
+    char *addition(char * string1, char * string2);
+    char *multiplication(char * string1, char * string2);
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 // TODO - Исправить в аргументах функций "std:string название строки" на const std::string &название строки - для уменьшения трат ресурсов
     //НУ ИЛИ ПРОСТО СДЕЛАТЬ ССЫЛКИ
 
-    // -------------------------------------multiplication functions----------------------------------------------------
-
-    std::string *multiplication(std::string string1, std::string &string2);
-
-    std::string fullStringMultiplication(std::string maxString, std::string minString);
-
-    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
     public:
         size_t length = 0;
-        std::string * stringArray = nullptr;
+        char * stringArray = nullptr;
 
-        explicit BigInt(std::string &input) : length(input.size())
+        explicit BigInt(std::string input) : length(input.length())
         {
-            stringArray = new std::string;
-            *stringArray = input;
+            if (input[0] == '-')
+            {
+                minus_ = 1;
+                input.erase(input.begin());
+            }
+
+            stringArray = new char[length + 1];
+            strcpy(stringArray, input.data());
+
         }
 
         BigInt() = default;
