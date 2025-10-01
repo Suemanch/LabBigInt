@@ -27,27 +27,82 @@ char * BigInt :: getMinStrByLen(char * str1, char * str2)
     }
 }
 
+char * BigInt :: getMaxStr(char* num1, char* num2)
+{
+    while (*num1 == '0' || *num1 == '-') num1++;
+    while (*num2 == '0' || *num2 == '-') num2++;
+
+    size_t len1 = strlen(num1);
+    size_t len2 = strlen(num2);
+
+    if (len1 > len2) return num1;
+    if (len1 < len2) return num2;
+
+    for (int i = 0; i < strlen(num1); i++)
+    {
+        if (num1[i] - '0' > num2[i] - '0')
+            return num1;
+        if (num1[i] - '0' < num2[i] - '0')
+            return num2;
+    }
+
+}
+
+char * BigInt :: insertMinus(char *str)
+{
+    char *newResult = new char[strlen(str) + 2];
+    newResult[0] = '-';
+    strcpy(newResult + 1, str);
+    delete [] str;
+    str = newResult;
+    return str;
+}
+
+char * BigInt :: deleteMinus(char * str)
+{
+    char *newResult = new char[strlen(str) + 1];
+    strcpy(newResult, str+1);
+    delete [] str;
+    str = newResult;
+    return str;
+}
+
+char * BigInt :: addZeros(char *maxString, char *minString)
+{
+    int zerosToAdd = strlen(maxString) - strlen(minString);
+    if (zerosToAdd > 0) {
+        char* newMinString = new char[zerosToAdd + strlen(minString) + 1];
+        memset(newMinString, '0', zerosToAdd);
+        strcpy(newMinString + zerosToAdd, minString);
+
+        delete [] minString;
+        minString = newMinString;
+    }
+
+    return minString;
+}
+
 // ----------------------------------------------addition functions----------------------------------------------------
 
 char * BigInt::addition(char *str1, char * str2)
 {
-    char * maxString = str1;
-    char * minString = str2;
+    char *maxString = getMaxStrByLen(str1, str2);
+    char *minString = getMinStrByLen(str1, str2);
 
     resultLength_ = std::max(std::strlen(maxString), std::strlen(minString));
-    resultString_ = new char[resultLength_ + 1];
+    resultString_ = new char[resultLength_ + 2];
     memset(resultString_, 0, resultLength_ + 2);
     counter_ = resultLength_;
     borrow_ = 0;
 
     if (std::strlen(maxString) < std::strlen(minString))
     {
-        maxString = (std::string(std::strlen(minString) - std::strlen(maxString), '0') + maxString).data();
+        maxString = addZeros(minString, maxString);
     }
 
     if (std::strlen(minString) < std::strlen(maxString))
     {
-        minString = (std::string(std::strlen(maxString) - std::strlen(minString), '0') + minString).data();
+        minString = addZeros(maxString, minString);
     }
 
     int resultIndex = 0;
@@ -85,17 +140,30 @@ char * BigInt::addition(char *str1, char * str2)
 
 // ----------------------------------------------substraction functions-------------------------------------------------
 
-char *BigInt::substraction(char *maxString, char * minString)
+char *BigInt::substraction(char *str1, char * str2)
 {
-    resultLength_ = std::max(std::strlen(maxString), std::strlen(minString));
-    resultString_ = new char[resultLength_];
+    char *maxString = getMaxStr(str1,str2);
+    char * minString;
+    if (strcmp(str1, maxString) == 0)
+    {
+        minString = str2;
+    }
+    else
+    {
+        minString = str1;
+    }
+
+    resultLength_ = strlen(maxString);
+    resultString_ = new char[resultLength_ + 2];
     memset(resultString_, 0, resultLength_ + 2);
     counter_ = resultLength_;
     borrow_ = 0;
 
     // std::string maxString = std::max()
 
-    minString = (std::string(strlen(maxString)- strlen(minString), '0') + minString).data(); //align to length
+    minString = addZeros(maxString, minString);
+
+    int resultIndex = 0;
 
     for (int i = resultLength_ - 1; i >= 0; i--)
     {
@@ -104,19 +172,20 @@ char *BigInt::substraction(char *maxString, char * minString)
 
         if ( (maxStrLastDigit - borrow_) - minStrLastDigit >= 0)
         {
-            resultString_ += static_cast<char>(maxStrLastDigit - borrow_ - minStrLastDigit);
+            resultString_[resultIndex++] = (maxStrLastDigit - borrow_ - minStrLastDigit) + '0';
             borrow_ = 0;
         }
 
         else
         {
             maxStrLastDigit += 10;
-            resultString_ += (maxStrLastDigit - borrow_ - minStrLastDigit) + '0';
+            resultString_[resultIndex++] = (maxStrLastDigit - borrow_ - minStrLastDigit) + '0';
             borrow_ = 1;
         }
     }
 
     std::reverse(resultString_, resultString_ + strlen(resultString_));
+
     return resultString_;
 }
 
@@ -151,37 +220,58 @@ BigInt BigInt::operator+(const BigInt &other)
 {
     BigInt sum;
 
-    char * maxString = getMaxStrByLen(this->stringArray,other.stringArray);
-    char * minString = getMinStrByLen(this->stringArray,other.stringArray);
+    char * maxString = getMaxStr(this->stringArray,other.stringArray);
 
-    if (maxString[0] == '-' and minString[0] != '-')
+    if (this->stringArray[0] == '-' and other.stringArray[0] != '-')
     {
-        maxString[0] = ' '; // erase "-"
-        sum.stringArray = substraction(maxString, minString);
-        sum.minus_ = 1;
+        this->stringArray = deleteMinus(this->stringArray);
+        sum.stringArray = substraction(this->stringArray, other.stringArray);
+        char * newMax = getMaxStr(this->stringArray,other.stringArray);
+
+        if (strcmp(newMax, maxString) == 1)
+        {
+            sum.stringArray = insertMinus(sum.stringArray);
+        }
+
+        this->stringArray = insertMinus(this->stringArray);
+        sum.length = strlen(sum.stringArray);
+
+        return sum;
+    }
+
+    if (this->stringArray[0] != '-' and other.stringArray[0] == '-')
+    {
+        other.stringArray = deleteMinus(other.stringArray);
+        sum.stringArray = substraction(this->stringArray, other.stringArray);
+
+        char * newMax = getMaxStr(this->stringArray,other.stringArray);
+        if (strcmp(newMax, maxString) == 1)
+        {
+            sum.stringArray = insertMinus(sum.stringArray);
+        }
+
+        other.stringArray = insertMinus(other.stringArray); // get back "-"
         sum.length = strlen(sum.stringArray);
         return sum;
     }
 
-    if (maxString[0] != '-' and minString[0] == '-')
+    if (this->stringArray[0] == '-' and other.stringArray[0] == '-')
     {
-        maxString[0] = ' '; // erase "-"
-        sum.stringArray = substraction(maxString, minString);
+        other.stringArray = deleteMinus(other.stringArray);
+        this->stringArray = deleteMinus(this->stringArray);
+
+        sum.stringArray = addition(this->stringArray, other.stringArray);
+
+        sum.stringArray = insertMinus(sum.stringArray);
+
+        other.stringArray = insertMinus(other.stringArray); // get back "-"
+        this -> stringArray = insertMinus(this -> stringArray); // get back "-"
+
         sum.length = strlen(sum.stringArray);
         return sum;
     }
 
-    if (minString[0] == '-' and maxString[0] == '-')
-    {
-        minString[0] = ' ';
-        maxString[0] = ' ';
-        sum.stringArray = addition(maxString, minString);
-        sum.minus_ = 1;
-        sum.length = strlen(sum.stringArray);
-        return sum;
-    }
-
-    sum.stringArray = addition(maxString, minString);
+    sum.stringArray = addition(this->stringArray, other.stringArray);
 
     sum.length = strlen(sum.stringArray);
     return sum;
@@ -191,27 +281,70 @@ BigInt BigInt::operator-(const BigInt &other)
 {
     BigInt difference;
 
-    this->num_ = 1;
+    char * maxString = getMaxStr(this->stringArray,other.stringArray);
 
-    std::string maxString = getMaxStrByLen(this->stringArray, other.stringArray);
-    std::string minString = getMinStrByLen(this->stringArray, other.stringArray);
-
-    if (this->stringArray == maxString)
+    if (strcmp(maxString,this->stringArray) == 0)
     {
-        if (other.stringArray[0] == '-')
+        if (other.stringArray[0] == '-' && this->stringArray[0] != '-')
         {
+            other.stringArray = deleteMinus(other.stringArray);
             difference.stringArray = addition(this->stringArray, other.stringArray);
-            difference.length = strlen(difference.stringArray);
-            return difference;
+            other.stringArray = insertMinus(other.stringArray);
         }
 
-        difference.stringArray = substraction(other.stringArray, this->stringArray);
-        difference.minus_ = 1;
+        if (this->stringArray[0] == '-' && other.stringArray[0] != '-')
+        {
+            this -> stringArray = deleteMinus(other.stringArray);
+            difference.stringArray = substraction(this->stringArray, other.stringArray);
+        }
+
+        if (other.stringArray[0] != '-' && this->stringArray[0] != '-')
+        {
+            difference.stringArray = substraction(this->stringArray, other.stringArray);
+        }
+
     }
 
     else
     {
-        difference.stringArray = substraction(this->stringArray, other.stringArray);
+        if (other.stringArray[0] == '-' && this->stringArray[0] != '-')
+        {
+            other.stringArray = deleteMinus(other.stringArray);
+            difference.stringArray = addition(this->stringArray, other.stringArray);
+            other.stringArray = insertMinus(other.stringArray);
+        }
+
+        if (this->stringArray[0] == '-' && other.stringArray[0] != '-')
+        {
+            this -> stringArray = deleteMinus(this -> stringArray);
+            difference.stringArray = addition(this->stringArray, other.stringArray);
+
+            difference.stringArray = insertMinus(difference.stringArray);
+            this->stringArray = insertMinus(this->stringArray);
+        }
+
+        if (this->stringArray[0] == '-' && other.stringArray[0] == '-')
+        {
+            this -> stringArray = deleteMinus(this -> stringArray);
+            other.stringArray = deleteMinus(other.stringArray);
+
+            difference.stringArray = substraction(this->stringArray, other.stringArray);
+
+            maxString = getMaxStr(this->stringArray,other.stringArray);
+            if ( strcmp(this->stringArray, maxString) == 0)
+            {
+                difference.stringArray = insertMinus(difference.stringArray);
+            }
+
+            this->stringArray = insertMinus(this->stringArray);
+            other.stringArray = insertMinus(other.stringArray);
+        }
+
+        if (this->stringArray[0] != '-' && other.stringArray[0] != '-')
+        {
+            difference.stringArray = substraction(this->stringArray, other.stringArray);
+            difference.stringArray = insertMinus(difference.stringArray);
+        }
     }
 
     difference.length = strlen(difference.stringArray);
