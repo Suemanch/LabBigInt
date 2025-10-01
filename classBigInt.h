@@ -2,17 +2,16 @@
 #ifndef CLASSBIGINT_H
 #define CLASSBIGINT_H
 
-class BigInt
-{
+class BigInt {
 private:
     char symbol_{};
     char * resultString_ = nullptr;
     size_t resultLength_ = 0;
     size_t counter_ = 0; // can't be < 0
     int resultInt_ = 0;
-    int minus_ = 0; // if BigInt < 0 --> minus = 1
+    // bool isMax_ = false;
 
-    int num_ = 0; // 1st or 2nd num
+    // int position_ = 1; // 0 -> 1st num; 1 -> 2nd num
     int borrow_; // sub
 
     int resultDigit_ = 0; // mul
@@ -20,33 +19,37 @@ private:
 
     // ------------------------------------------------helpful functions------------------------------------------------
 
-    char * getMaxStrByLen(char *str1, char *str2);
-    char * getMinStrByLen(char *str1, char *str2);
+    static char * getMaxStrByLen(char *str1, char *str2);
+    static char * getMinStrByLen(char *str1, char *str2);
+
+    static char * getMaxStr(char* num1, char* num2);
+
+    static char * addZeros(char *maxString, char *minString);
+
+    static char * deleteMinus(char * str);
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     // ----------------------------------------------operation functions------------------------------------------------
 
-    char *substraction(char * maxString, char * minString);
-    char *addition(char * string1, char * string2);
-    char *multiplication(char * string1, char * string2);
+    char *substraction(char * str1, char * str2);
+    char *addition(char * str1, char * str2);
+    char *multiplication(char * str1, char * str2);
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-// TODO - Исправить в аргументах функций "std:string название строки" на const std::string &название строки - для уменьшения трат ресурсов
-    //НУ ИЛИ ПРОСТО СДЕЛАТЬ ССЫЛКИ
-
     public:
         size_t length = 0;
-        char * stringArray = nullptr;
+        mutable char * stringArray = nullptr;
+        int minus = 0; // if BigInt < 0 --> minus = 1
 
-        explicit BigInt(std::string input) : length(input.length())
+        explicit BigInt(std::string &input) : length(input.length())
         {
-            if (input[0] == '-')
-            {
-                minus_ = 1;
-                input.erase(input.begin());
-            }
+            // if (input[0] == '-')
+            // {
+            //     minus = 1;
+            //     input.erase(input.begin());
+            // }
 
             stringArray = new char[length + 1];
             strcpy(stringArray, input.data());
@@ -59,6 +62,8 @@ private:
         {
             // delete stringArray;
         }
+
+        char * insertMinus(char *str);
 
         BigInt operator+(const BigInt &other);
 
