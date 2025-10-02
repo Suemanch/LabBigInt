@@ -26,9 +26,9 @@ char * BigInt :: getMaxStr(char* num1, char* num2)
 
 }
 
-char * BigInt :: insertMinus(char *str)
+char * BigInt :: insertMinus(char *str, const BigInt &other)
 {
-    if (str[0] != '-' and this->minus_ == 1)
+    if (str[0] != '-' and (this -> minus_ == 1 || other.minus_ == 1))
     {
         char *newResult = new char[strlen(str) + 2];
         newResult[0] = '-';
@@ -41,9 +41,9 @@ char * BigInt :: insertMinus(char *str)
     return str;
 }
 
-char * BigInt :: deleteMinus(char * str)
+char * BigInt :: deleteMinus(char * str, const BigInt & other)
 {
-    if (str[0] == '-')
+    if (str[0] == '-' and (this->minus_ == 1 || other.minus_ == 1) )
     {
         char *newResult = new char[strlen(str) + 1];
         strcpy(newResult, str+1);
@@ -156,8 +156,6 @@ char *BigInt::substraction(char *str1, char * str2)
     memset(resultString_, 0, resultLength_ + 2);
     counter_ = resultLength_;
     borrow_ = 0;
-
-    // std::string maxString = std::max()
 
     minString = addZeros(maxString, minString);
 
@@ -314,61 +312,34 @@ BigInt BigInt::operator+(const BigInt &other)
 {
     BigInt sum;
 
+    this->stringArray = deleteMinus(this->stringArray, other);
+    other.stringArray = deleteMinus(other.stringArray, other);
+
     char * maxString = getMaxStr(this->stringArray,other.stringArray);
 
-    if (this->stringArray[0] == '-' and other.stringArray[0] != '-')
+    if (this->minus_ + other.minus_ == 1)
     {
-        this->stringArray = deleteMinus(this->stringArray);
         sum.stringArray = substraction(this->stringArray, other.stringArray);
-        char * newMax = getMaxStr(this->stringArray,other.stringArray);
-
-        if (strcmp(newMax, maxString) == 1)
-        {
-            sum.stringArray = insertMinus(sum.stringArray);
-        }
-
-        this->stringArray = insertMinus(this->stringArray);
-        sum.length = strlen(sum.stringArray);
-
-        return sum;
     }
 
-    if (this->stringArray[0] != '-' and other.stringArray[0] == '-')
+    if (this->minus_ + other.minus_ == 2 || this->minus_ + other.minus_ == 0)
     {
-        other.stringArray = deleteMinus(other.stringArray);
-        sum.stringArray = substraction(this->stringArray, other.stringArray);
-
-        char * newMax = getMaxStr(this->stringArray,other.stringArray);
-        if (strcmp(newMax, maxString) == 1)
-        {
-            sum.stringArray = insertMinus(sum.stringArray);
-        }
-
-        other.stringArray = insertMinus(other.stringArray); // get back "-"
-        sum.length = strlen(sum.stringArray);
-
-        return sum;
-    }
-
-    if (this->stringArray[0] == '-' and other.stringArray[0] == '-')
-    {
-        other.stringArray = deleteMinus(other.stringArray);
-        this->stringArray = deleteMinus(this->stringArray);
-
         sum.stringArray = addition(this->stringArray, other.stringArray);
 
-        sum.stringArray = insertMinus(sum.stringArray);
-
-        other.stringArray = insertMinus(other.stringArray); // get back "-"
-        this -> stringArray = insertMinus(this -> stringArray); // get back "-"
-
-        sum.length = strlen(sum.stringArray);
-
-        return sum;
+        if (this->minus_ + other.minus_ == 2)
+        {
+            sum.stringArray = insertMinus(sum.stringArray, other);
+        }
     }
 
-    sum.stringArray = addition(this->stringArray, other.stringArray);
+    if ( (strcmp(maxString, this->stringArray) == 0 && this->minus_ == 1) ||
+    (strcmp(maxString, other.stringArray) == 0 && other.minus_ == 1) )
+    {
+        sum.stringArray = insertMinus(sum.stringArray, other);
+    }
 
+    other.stringArray = insertMinus(other.stringArray, other); // get back "-"
+    this -> stringArray = insertMinus(this -> stringArray, other); // get back "-"
     sum.length = strlen(sum.stringArray);
     return sum;
 }
@@ -377,72 +348,53 @@ BigInt BigInt::operator-(const BigInt &other)
 {
     BigInt difference;
 
+    this->stringArray = deleteMinus(this->stringArray, other);
+    other.stringArray = deleteMinus(other.stringArray, other);
+
     char * maxString = getMaxStr(this->stringArray,other.stringArray);
 
-    if (strcmp(maxString,this->stringArray) == 0) // if maxString - minString
+    if (strcmp(maxString,this->stringArray) == 0) // if abs(maxString) - abs(minString)
     {
-        if (other.stringArray[0] == '-' && this->stringArray[0] != '-')
+        if ( this->minus_ + other.minus_ == 1)
         {
-            other.stringArray = deleteMinus(other.stringArray);
             difference.stringArray = addition(this->stringArray, other.stringArray);
-            other.stringArray = insertMinus(other.stringArray);
         }
 
-        if (this->stringArray[0] == '-' && other.stringArray[0] != '-')
+        if ( this->minus_ + other.minus_ == 0 || this->minus_ + other.minus_ == 2)
         {
-            this -> stringArray = deleteMinus(other.stringArray);
             difference.stringArray = substraction(this->stringArray, other.stringArray);
         }
 
-        if (other.stringArray[0] != '-' && this->stringArray[0] != '-')
+        if (this->minus_ == 1)
         {
-            difference.stringArray = substraction(this->stringArray, other.stringArray);
+            difference.minus_ = 1;
+            difference.stringArray = insertMinus(difference.stringArray, difference);
         }
 
     }
 
-    else  // if minString - maxString
+    else  // if abs(minString) - abs(maxString)
     {
-        if (other.stringArray[0] == '-' && this->stringArray[0] != '-')
+        if ( this->minus_ + other.minus_ == 1)
         {
-            other.stringArray = deleteMinus(other.stringArray);
             difference.stringArray = addition(this->stringArray, other.stringArray);
-            other.stringArray = insertMinus(other.stringArray);
         }
 
-        if (this->stringArray[0] == '-' && other.stringArray[0] != '-')
-        {
-            this -> stringArray = deleteMinus(this -> stringArray);
-            difference.stringArray = addition(this->stringArray, other.stringArray);
-
-            difference.stringArray = insertMinus(difference.stringArray);
-            this->stringArray = insertMinus(this->stringArray);
-        }
-
-        if (this->stringArray[0] == '-' && other.stringArray[0] == '-')
-        {
-            this -> stringArray = deleteMinus(this -> stringArray);
-            other.stringArray = deleteMinus(other.stringArray);
-
-            difference.stringArray = substraction(this->stringArray, other.stringArray);
-
-            maxString = getMaxStr(this->stringArray,other.stringArray);
-            if ( strcmp(this->stringArray, maxString) == 0)
-            {
-                difference.stringArray = insertMinus(difference.stringArray);
-            }
-
-            this->stringArray = insertMinus(this->stringArray);
-            other.stringArray = insertMinus(other.stringArray);
-        }
-
-        if (this->stringArray[0] != '-' && other.stringArray[0] != '-')
+        if ( (this->minus_ + other.minus_ == 2) || (this->minus_ + other.minus_ == 0) )
         {
             difference.stringArray = substraction(this->stringArray, other.stringArray);
-            difference.stringArray = insertMinus(difference.stringArray);
         }
+
+        if (other.minus_ == 0)
+        {
+            difference.minus_ = 1;
+            difference.stringArray = insertMinus(difference.stringArray, difference);
+        }
+
     }
 
+    other.stringArray = insertMinus(other.stringArray, other);
+    this->stringArray = insertMinus(this->stringArray, other);
     difference.length = strlen(difference.stringArray);
     return difference;
 }
@@ -461,14 +413,14 @@ BigInt BigInt::operator*(const BigInt &other)
 
     if (this->minus_ + other.minus_ >= 1)
     {
-        this->stringArray = deleteMinus(this->stringArray);
-        other.stringArray = deleteMinus(other.stringArray);
+        this->stringArray = deleteMinus(this->stringArray, other);
+        other.stringArray = deleteMinus(other.stringArray, other);
 
         mul.stringArray = multiplication(this->stringArray, other.stringArray);
 
-        mul.stringArray = insertMinus(mul.stringArray);
-        this->stringArray = insertMinus(this->stringArray);
-        other.stringArray = insertMinus(other.stringArray);
+        mul.stringArray = insertMinus(mul.stringArray, other);
+        this->stringArray = insertMinus(this->stringArray, other);
+        other.stringArray = insertMinus(other.stringArray, other);
     }
 
     mul.stringArray = multiplication(this->stringArray, other.stringArray);
