@@ -3,30 +3,6 @@
 #include <iostream>
 #include "classBigInt.h"
 
-char * BigInt :: getMaxStrByLen(char * str1, char * str2)
-{
-    if ( abs(std::stoi(str1)) == std::max(abs(std::stoi(str1)), abs(std::stoi(str2)) ))
-    {
-        return str1;
-    }
-    else
-    {
-        return str2;
-    }
-}
-
-char * BigInt :: getMinStrByLen(char * str1, char * str2)
-{
-    if ( abs(std::stoi(str1)) == std::min(abs(std::stoi(str1)), abs(std::stoi(str2)) ))
-    {
-        return str1;
-    }
-    else
-    {
-        return str2;
-    }
-}
-
 char * BigInt :: getMaxStr(char* num1, char* num2)
 {
     while (*num1 == '0' || *num1 == '-') num1++;
@@ -46,37 +22,51 @@ char * BigInt :: getMaxStr(char* num1, char* num2)
             return num2;
     }
 
+    return num1; // if num1 = num2
+
 }
 
 char * BigInt :: insertMinus(char *str)
 {
-    char *newResult = new char[strlen(str) + 2];
-    newResult[0] = '-';
-    strcpy(newResult + 1, str);
-    delete [] str;
-    str = newResult;
+    if (str[0] != '-' and this->minus_ == 1)
+    {
+        char *newResult = new char[strlen(str) + 2];
+        newResult[0] = '-';
+        strcpy(newResult + 1, str);
+        delete [] str;
+        str = newResult;
+        return str;
+    }
+
     return str;
 }
 
 char * BigInt :: deleteMinus(char * str)
 {
-    char *newResult = new char[strlen(str) + 1];
-    strcpy(newResult, str+1);
-    delete [] str;
-    str = newResult;
+    if (str[0] == '-')
+    {
+        char *newResult = new char[strlen(str) + 1];
+        strcpy(newResult, str+1);
+        delete [] str;
+        str = newResult;
+        return str;
+    }
+
     return str;
+
 }
 
 char * BigInt :: addZeros(char *maxString, char *minString)
 {
     int zerosToAdd = strlen(maxString) - strlen(minString);
-    if (zerosToAdd > 0) {
+    if (zerosToAdd > 0)
+    {
         char* newMinString = new char[zerosToAdd + strlen(minString) + 1];
         memset(newMinString, '0', zerosToAdd);
         strcpy(newMinString + zerosToAdd, minString);
 
-        delete [] minString;
         minString = newMinString;
+        // delete [] newMinString;
     }
 
     return minString;
@@ -86,8 +76,16 @@ char * BigInt :: addZeros(char *maxString, char *minString)
 
 char * BigInt::addition(char *str1, char * str2)
 {
-    char *maxString = getMaxStrByLen(str1, str2);
-    char *minString = getMinStrByLen(str1, str2);
+    char *maxString = getMaxStr(str1,str2);
+    char * minString;
+    if (strcmp(str1, maxString) == 0)
+    {
+        minString = str2;
+    }
+    else
+    {
+        minString = str1;
+    }
 
     resultLength_ = std::max(std::strlen(maxString), std::strlen(minString));
     resultString_ = new char[resultLength_ + 2];
@@ -195,21 +193,117 @@ char *BigInt::substraction(char *str1, char * str2)
 
 //--------------------------------------------------multiplication functions--------------------------------------------
 
-// char *BigInt::multiplication(char *string1, char *string2)
-// {
-//     resultInt_ = 0;
-//     resultLength_ = std::max(std::strlen(string1), std::strlen(string2));
-//     counter_ = resultLength_;
-//     resultString_ = new char[resultLength_];
-//
-//     const char * maxString = getMaxStrByLen(string1,string2);
-//     const char * minString = getMinStrByLen(string1,string2);
-//
-//     // char lastUnderDigit;
-//     //
-//     // resultString_ = std::to_string(resultInt_);
-//     // return resultString_;
-// }
+char *BigInt::multiplication(char *string1, char *string2)
+{
+    resultLength_ = std::max(std::strlen(string1), std::strlen(string2));
+    resultString_ = new char[resultLength_ + 2]; // resultLength_ + 2
+    memset(resultString_, 0, resultLength_ + 2); // resultLength_ + 2
+    counter_ = resultLength_;
+    deg_ = 0;
+
+    char *maxString = getMaxStr(string1,string2);
+    char * minString;
+    if (strcmp(string1, maxString) == 0)
+    {
+        minString = string2;
+    }
+    else
+    {
+        minString = string1;
+    }
+
+    minString = addZeros(maxString, minString);
+
+    int resultIndex = 0;
+    int minStrLength = std::strlen(minString);
+    int maxStrLength = std::strlen(maxString);
+
+    for (int i = minStrLength - 1; i >= 0; i--)
+    {
+        int minStrLastDigit = minString[i] - '0';
+
+        if (minStrLastDigit == 0 and minString[i-1] != *minString) // here the end of minStr;
+        {
+            break;
+        }
+
+        if (strlen(resultString_) >= resultLength_)
+        {
+            char * resultString_ = new char[strlen(resultString_) + 2];
+        }
+
+        char * lastResultTemp = new char[strlen(resultString_) + 2];
+        lastResultTemp = strcpy(lastResultTemp, resultString_);
+
+        memset(resultString_, 0, resultLength_ + 2); // clear resultString_
+
+        resultIndex = 0;
+        borrow_ = 0;
+
+        for (int j = maxStrLength - 1; j >= 0; j--)
+        {
+            int maxStrLastDigit = maxString[j] - '0';
+
+            int mul = ( maxStrLastDigit * minStrLastDigit ) + borrow_;
+
+            if (mul > 9)
+            {
+                resultString_[resultIndex++] = ( mul % 10 ) + '0';
+                borrow_ = ( (maxStrLastDigit * minStrLastDigit) + borrow_ ) / 10;
+            }
+
+            else
+            {
+                resultString_[resultIndex++] =  mul  + '0';
+                borrow_ = 0;
+            }
+
+        }
+
+        if (borrow_ != 0)
+        {
+            resultString_[resultIndex++] = borrow_ + '0';
+            borrow_ = 0;
+        }
+
+        std::reverse(resultString_, resultString_ + strlen(resultString_));
+
+        if (i < minStrLength - 1)
+        {
+            deg_++;
+
+            size_t newLen = strlen(resultString_) + deg_;
+            size_t oldLen = strlen(resultString_);
+
+            char * newResult = new char[newLen + 1];
+            memset(newResult, 0, newLen);
+            newResult[newLen] = '\0';
+            strcpy(newResult, resultString_);
+
+            int counter = 0;
+            while (counter < deg_)
+            {
+                newResult[oldLen + counter] = '0';
+                counter++;
+            }
+
+            resultString_ = newResult;
+        }
+
+
+        if (strcmp(lastResultTemp,"") == 1)
+        {
+            lastResultTemp = addition(lastResultTemp, resultString_);
+        }
+
+
+
+    }
+
+
+    // std::reverse(resultString_, resultString_ + strlen(resultString_));
+    return resultString_;
+}
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -252,6 +346,7 @@ BigInt BigInt::operator+(const BigInt &other)
 
         other.stringArray = insertMinus(other.stringArray); // get back "-"
         sum.length = strlen(sum.stringArray);
+
         return sum;
     }
 
@@ -268,6 +363,7 @@ BigInt BigInt::operator+(const BigInt &other)
         this -> stringArray = insertMinus(this -> stringArray); // get back "-"
 
         sum.length = strlen(sum.stringArray);
+
         return sum;
     }
 
@@ -283,7 +379,7 @@ BigInt BigInt::operator-(const BigInt &other)
 
     char * maxString = getMaxStr(this->stringArray,other.stringArray);
 
-    if (strcmp(maxString,this->stringArray) == 0)
+    if (strcmp(maxString,this->stringArray) == 0) // if maxString - minString
     {
         if (other.stringArray[0] == '-' && this->stringArray[0] != '-')
         {
@@ -305,7 +401,7 @@ BigInt BigInt::operator-(const BigInt &other)
 
     }
 
-    else
+    else  // if minString - maxString
     {
         if (other.stringArray[0] == '-' && this->stringArray[0] != '-')
         {
@@ -351,20 +447,33 @@ BigInt BigInt::operator-(const BigInt &other)
     return difference;
 }
 
-BigInt& BigInt::operator++()
-{
-    BigInt result;
-    char minString[2] = "1";
-    result.stringArray = addition(this->stringArray,minString);
-    return result;
-}
-
-// BigInt BigInt::operator*(const BigInt &other)
+// BigInt& BigInt::operator++()
 // {
-//     BigInt mul;
-//     mul.stringArray = multiplication(this->stringArray, other.stringArray);
-//     mul.length = strlen(mul.stringArray);
-//     return mul;
+//     BigInt result;
+//     char minString[2] = "1";
+//     result.stringArray = addition(this->stringArray,minString);
+//     return result;
 // }
+
+BigInt BigInt::operator*(const BigInt &other)
+{
+    BigInt mul;
+
+    if (this->minus_ + other.minus_ >= 1)
+    {
+        this->stringArray = deleteMinus(this->stringArray);
+        other.stringArray = deleteMinus(other.stringArray);
+
+        mul.stringArray = multiplication(this->stringArray, other.stringArray);
+
+        mul.stringArray = insertMinus(mul.stringArray);
+        this->stringArray = insertMinus(this->stringArray);
+        other.stringArray = insertMinus(other.stringArray);
+    }
+
+    mul.stringArray = multiplication(this->stringArray, other.stringArray);
+    mul.length = strlen(mul.stringArray);
+    return mul;
+}
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
