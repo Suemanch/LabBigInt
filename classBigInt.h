@@ -18,8 +18,8 @@ private:
 
     // ------------------------------------------------helpful functions------------------------------------------------
 
-    char * insertMinus(char *str);
-    char * deleteMinus(char * str);
+    char * insertMinus(char *str,const BigInt & other);
+    char * deleteMinus(char * str,const BigInt & other);
     static char * getMaxStr(char* num1, char* num2);
     static char * addZeros(char *maxString, char *minString);
 
