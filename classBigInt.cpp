@@ -3,6 +3,8 @@
 #include <iostream>
 #include "classBigInt.h"
 
+#define _crtsec
+
 char * BigInt :: getMaxStr(char* num1, char* num2)
 {
     while (*num1 == '0' || *num1 == '-') num1++;
@@ -11,8 +13,8 @@ char * BigInt :: getMaxStr(char* num1, char* num2)
     size_t len1 = strlen(num1);
     size_t len2 = strlen(num2);
 
-    char * num1cpy = new char[len1];
-    char * num2cpy = new char[len1];
+    if (len1 > len2) return num1;
+    if (len1 < len2) return num2;
 
     for (int i = 0; i < strlen(num1); i++)
     {
@@ -221,7 +223,7 @@ char *BigInt::multiplication(char *string1, char *string2)
     {
         int minStrLastDigit = minString[i] - '0';
 
-        if (minStrLastDigit == 0 and minString[i-1] == *minString) // here the end of minStr;
+        if (minStrLastDigit == 0 and minString[i] == *minString) // here the end of minStr;
         {
             break;
         }
@@ -319,32 +321,84 @@ char *BigInt::division(char *str1, char *str2)
     }
 
     resultLength_ = std::max(std::strlen(str1), std::strlen(str2));
-    resultString_ = new char[resultLength_ + 2]; // resultLength_ + 2
-    memset(resultString_, 0, resultLength_ + 2); // resultLength_ + 2
+    resultString_ = new char[resultLength_ + 2];
+
+    char * Result = new char[resultLength_ + 2];
+
+    memset(resultString_, 0, resultLength_ + 2);
+    memset(Result, 0, resultLength_ + 2);
+
     counter_ = resultLength_;
     deg_ = 0;
 
-    int resultIndex = 0;
     int maxStringLen = std::strlen(maxString);
     int divisorLen = std::strlen(minString);
 
-    while (resultIndex <= maxStringLen)
+    int resultIndex = 0;
+    int tmpNumIndex = 0;
+
+    char * multiplier = new char[divisorLen + 1];
+    char * tmpNum = new char[divisorLen + 1];
+
+    memset(tmpNum, 0, divisorLen + 1);
+    memset(multiplier, 0, divisorLen + 1);
+
+    strncat(tmpNum, &maxString[tmpNumIndex], divisorLen);
+
+    for (int i = 1; i < 10;)
     {
-        char * tempStr = new char[maxStringLen + 1];
-        memset(tempStr, 0, maxStringLen + 1);
-
-        strncat(tempStr, &maxString[resultIndex], divisorLen);
-
-        for (int i = 1; i < divisorLen; i++)
+        if (tmpNumIndex + divisorLen >= maxStringLen and strcmp(getMaxStr(tmpNum,minString),minString) == 0)
         {
-            const char * convertedNum = std::to_string(i).c_str();
-            char * multiplier = strcpy(multiplier, convertedNum);
-
-            tempStr = multiplication(multiplier, minString);
+            break;
         }
+
+        if (strcmp(getMaxStr(tmpNum, minString),tmpNum) != 0)
+        {
+            strncat(tmpNum, &maxString[divisorLen + tmpNumIndex], 1);
+            tmpNumIndex += 1;
+        }
+
+        multiplier[0] = i + '0';
+
+        char * subtrahend = multiplication(multiplier, minString);
+
+        if (strcmp(getMaxStr(tmpNum, subtrahend),subtrahend) == 0)
+        {
+            i++;
+            continue;
+        }
+
+        char * tmpNew = substraction(tmpNum, subtrahend);
+
+        if (strcmp(getMaxStr(tmpNew, minString),tmpNew) == 0)
+        {
+            i++;
+            continue;
+        }
+
+        if (strcmp(getMaxStr(tmpNum, subtrahend), subtrahend) == 0)
+        {
+            Result[resultIndex++] = '0';
+            continue;
+        }
+
+        memset(tmpNum, 0, divisorLen + 1);
+
+        while (tmpNew[0] == '0')
+        {
+            tmpNew++;
+        }
+
+        tmpNum = tmpNew;
+
+        Result[resultIndex++] = i + '0'; // we get for Result past value
+        i = 1;
+
+        memset(multiplier, 0, divisorLen + 1);
     }
 
-
+    strcpy(resultString_, Result);
+    return resultString_;
 }
 
 
