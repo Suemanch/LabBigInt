@@ -28,7 +28,8 @@ char * BigInt :: getMaxStr(char* num1, char* num2)
 
 char * BigInt :: insertMinus(char *str, const BigInt &other)
 {
-    if (str[0] != '-' and (this -> minus_ == 1 || other.minus_ == 1))
+    // if (str[0] != '-' and (this -> minus_ == 1 || other.minus_ == 1))
+    if (str[0] != '-' and other.minus_ == 1)
     {
         char *newResult = new char[strlen(str) + 2];
         newResult[0] = '-';
@@ -394,7 +395,7 @@ BigInt BigInt::operator-(const BigInt &other)
     }
 
     other.stringArray = insertMinus(other.stringArray, other);
-    this->stringArray = insertMinus(this->stringArray, other);
+    this->stringArray = insertMinus(this->stringArray, *this);
     difference.length = strlen(difference.stringArray);
     return difference;
 }
@@ -411,19 +412,24 @@ BigInt BigInt::operator*(const BigInt &other)
 {
     BigInt mul;
 
-    if (this->minus_ + other.minus_ >= 1)
+    this->stringArray = deleteMinus(this->stringArray, other);
+    other.stringArray = deleteMinus(other.stringArray, other);
+
+    if (this->minus_ + other.minus_ == 1)
     {
-        this->stringArray = deleteMinus(this->stringArray, other);
-        other.stringArray = deleteMinus(other.stringArray, other);
-
         mul.stringArray = multiplication(this->stringArray, other.stringArray);
-
-        mul.stringArray = insertMinus(mul.stringArray, other);
-        this->stringArray = insertMinus(this->stringArray, other);
-        other.stringArray = insertMinus(other.stringArray, other);
+        mul.minus_ = 1;
     }
 
-    mul.stringArray = multiplication(this->stringArray, other.stringArray);
+    if (this->minus_ + other.minus_ == 2 || this->minus_ + other.minus_ == 0)
+    {
+        mul.stringArray = multiplication(this->stringArray, other.stringArray);
+    }
+
+    mul.stringArray = insertMinus(mul.stringArray, mul);
+    this->stringArray = insertMinus(this->stringArray, other);
+    other.stringArray = insertMinus(other.stringArray, other);
+
     mul.length = strlen(mul.stringArray);
     return mul;
 }
