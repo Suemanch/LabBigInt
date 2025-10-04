@@ -18,8 +18,8 @@ private:
 
     // ------------------------------------------------helpful functions------------------------------------------------
 
-    char * insertMinus(char *str,const BigInt & other);
-    char * deleteMinus(char * str,const BigInt & other);
+    char * insertMinus(char *str, int minus);
+    char * deleteMinus(char * strl, int minus);
     static char * getMaxStr(char* num1, char* num2);
     static char * addZeros(char *maxString, char *minString);
 
@@ -30,6 +30,7 @@ private:
     char *substraction(char * str1, char * str2);
     char *addition(char * str1, char * str2);
     char *multiplication(char * str1, char * str2);
+    char *division(char * str1, char * str2);
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -64,6 +65,8 @@ private:
         // BigInt& operator++();
 
         BigInt operator*(const BigInt &other);
+
+        BigInt operator/(const BigInt &other);
 
 
 };
