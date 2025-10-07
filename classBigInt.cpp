@@ -89,7 +89,6 @@ char * BigInt::addition(char *str1, char * str2)
     resultLength_ = std::max(std::strlen(maxString), std::strlen(minString));
     resultString_ = new char[resultLength_ + 2];
     memset(resultString_, 0, resultLength_ + 2);
-    counter_ = resultLength_;
     borrow_ = 0;
 
     if (std::strlen(maxString) < std::strlen(minString))
@@ -153,7 +152,6 @@ char *BigInt::substraction(char *str1, char * str2)
     resultLength_ = strlen(maxString);
     resultString_ = new char[resultLength_ + 2];
     memset(resultString_, 0, resultLength_ + 2);
-    counter_ = resultLength_;
     borrow_ = 0;
 
     minString = addZeros(maxString, minString);
@@ -204,7 +202,6 @@ char *BigInt::multiplication(char *string1, char *string2)
     resultLength_ = std::max(std::strlen(string1), std::strlen(string2));
     resultString_ = new char[resultLength_ + 2]; // resultLength_ + 2
     memset(resultString_, 0, resultLength_ + 2); // resultLength_ + 2
-    counter_ = resultLength_;
     deg_ = 0;
 
     char *maxString = getMaxStr(string1,string2);
@@ -401,7 +398,6 @@ char *BigInt::division(char *str1, char *str2)
     return resultString_;
 }
 
-
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
@@ -500,13 +496,13 @@ BigInt BigInt::operator-(const BigInt &other)
     return difference;
 }
 
-// BigInt& BigInt::operator++()
-// {
-//     BigInt result;
-//     char minString[2] = "1";
-//     result.stringArray = addition(this->stringArray,minString);
-//     return result;
-// }
+BigInt& BigInt::operator++()
+{
+    BigInt result;
+    char minString[2] = "1";
+    result.stringArray = addition(this->stringArray,minString);
+    return result;
+}
 
 BigInt BigInt::operator*(const BigInt &other)
 {
@@ -558,6 +554,5 @@ BigInt BigInt::operator/(const BigInt &other)
 
     divResult.length = strlen(divResult.stringArray);
     return divResult;
-
 }
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
