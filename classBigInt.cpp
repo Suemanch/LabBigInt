@@ -34,7 +34,6 @@ char * BigInt :: insertMinus(char *str, int minus)
         char *newResult = new char[strlen(str) + 2];
         newResult[0] = '-';
         strcpy(newResult + 1, str);
-        delete [] str;
         str = newResult;
         return str;
     }
@@ -166,7 +165,7 @@ char *BigInt::substraction(char *str1, char * str2)
         int maxStrLastDigit = maxString[i] - '0';
         int minStrLastDigit = minString[i] - '0';
 
-        if ((maxStrLastDigit - borrow_) - minStrLastDigit == 0 and minString[i] == *minString) // here the end of minStr;
+        if ((maxStrLastDigit - borrow_) - minStrLastDigit == 0 and &minString[i] == minString) // here the end of minStr;
         {
             break;
         }
@@ -186,6 +185,12 @@ char *BigInt::substraction(char *str1, char * str2)
     }
 
     std::reverse(resultString_, resultString_ + strlen(resultString_));
+
+    while (resultString_[0] == '0' and resultString_[1] != '\0')
+    {
+        resultString_++;
+    }
+
     return resultString_;
 }
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -213,6 +218,7 @@ char *BigInt::multiplication(char *string1, char *string2)
         minString = string1;
     }
 
+    int oldMinStrLen = std::strlen(minString);
     minString = addZeros(maxString, minString);
 
     int resultIndex = 0;
@@ -223,7 +229,7 @@ char *BigInt::multiplication(char *string1, char *string2)
     {
         int minStrLastDigit = minString[i] - '0';
 
-        if (minStrLastDigit == 0 and minString[i] == *minString) // here the end of minStr;
+        if (minStrLastDigit == 0 and minString[i] == *minString and i == ( minStrLength - oldMinStrLen - 1 ) ) // here the end of minStr;
         {
             break;
         }
@@ -299,6 +305,11 @@ char *BigInt::multiplication(char *string1, char *string2)
 
     }
 
+    while (resultString_[0] == '0' and resultString_[1] != '\0')
+    {
+        resultString_++;
+    }
+
     return resultString_;
 }
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -308,7 +319,6 @@ char *BigInt::multiplication(char *string1, char *string2)
 
 char *BigInt::division(char *str1, char *str2)
 {
-
     char *maxString = getMaxStr(str1,str2);
     char * minString;
     if (strcmp(str1, maxString) == 0)
@@ -327,9 +337,6 @@ char *BigInt::division(char *str1, char *str2)
 
     memset(resultString_, 0, resultLength_ + 2);
     memset(Result, 0, resultLength_ + 2);
-
-    counter_ = resultLength_;
-    deg_ = 0;
 
     int maxStringLen = std::strlen(maxString);
     int divisorLen = std::strlen(minString);
@@ -361,13 +368,6 @@ char *BigInt::division(char *str1, char *str2)
         multiplier[0] = i + '0';
 
         char * subtrahend = multiplication(multiplier, minString);
-
-        if (strcmp(getMaxStr(tmpNum, subtrahend),subtrahend) == 0)
-        {
-            i++;
-            continue;
-        }
-
         char * tmpNew = substraction(tmpNum, subtrahend);
 
         if (strcmp(getMaxStr(tmpNew, minString),tmpNew) == 0)
@@ -376,7 +376,7 @@ char *BigInt::division(char *str1, char *str2)
             continue;
         }
 
-        if (strcmp(getMaxStr(tmpNum, subtrahend), subtrahend) == 0)
+        if (strcmp(getMaxStr(tmpNum, subtrahend), subtrahend) == 0 and strcmp(tmpNew, "0") == 1)
         {
             Result[resultIndex++] = '0';
             continue;
@@ -541,8 +541,22 @@ BigInt BigInt::operator/(const BigInt &other)
     this->stringArray = deleteMinus(this->stringArray, this->minus_);
     other.stringArray = deleteMinus(other.stringArray, other.minus_);
 
-    divResult.stringArray = division(this->stringArray, other.stringArray);
+    if (this->minus_ + other.minus_ == 1)
+    {
+        divResult.stringArray = division(this->stringArray, other.stringArray);
+        divResult.minus_ = 1;
+    }
 
+    if (this->minus_ + other.minus_ == 2 || this->minus_ + other.minus_ == 0)
+    {
+        divResult.stringArray = division(this->stringArray, other.stringArray);
+    }
+
+    divResult.stringArray = insertMinus(divResult.stringArray, divResult.minus_);
+    this->stringArray = insertMinus(this->stringArray, this->minus_);
+    other.stringArray = insertMinus(other.stringArray, other.minus_);
+
+    divResult.length = strlen(divResult.stringArray);
     return divResult;
 
 }
