@@ -9,17 +9,18 @@ private:
     size_t resultLength_ = 0;
     size_t counter_ = 0; // can't be < 0
     int resultInt_ = 0;
-    int borrow_;
+    int borrow_ = 0;
 
-    int deg_; // mul
+    int deg_ = 0; // mul
     int minus_ = 0;
     int resultDigit_ = 0; // mul
     int countOfZeros_ = 0; // mul
 
     // ------------------------------------------------helpful functions------------------------------------------------
 
-    char * insertMinus(char *str, int minus);
-    char * deleteMinus(char * strl, int minus);
+    static char * insertMinus(char *str, int minus);
+
+    static char * deleteMinus(char * strl, int minus);
     static char * getMaxStr(char* num1, char* num2);
     static char * addZeros(char *maxString, char *minString);
 
