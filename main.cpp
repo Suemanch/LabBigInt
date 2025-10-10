@@ -22,14 +22,17 @@ int main()
     result = bigInt1 - bigInt2;
     std::cout << stringBigInt1 << " - " << stringBigInt2 << ": " << result.stringArray << "\n";
 
-    ++bigInt1;
-    std::cout << "++" << stringBigInt1 << ": " << bigInt1.stringArray << "\n";
-
     result = bigInt1 * bigInt2;
     std::cout << bigInt1.stringArray << " * " << bigInt2.stringArray << ": " << result.stringArray << "\n";
 
     result = bigInt1 / bigInt2;
-    std::cout << bigInt1.stringArray << " / " << bigInt2.stringArray << ": " << result.stringArray << "\n";
+    if (strcmp(result.stringArray, "") != 0)
+    {
+        std::cout << bigInt1.stringArray << " / " << bigInt2.stringArray << ": " << result.stringArray << "\n";
+    }
+
+    bigInt1 = ++bigInt1;
+    std::cout << "++" << stringBigInt1 << ": " << bigInt1.stringArray << "\n";
 
     // delete stringBigInt1;
     // delete stringBigInt2;
