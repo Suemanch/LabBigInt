@@ -6,9 +6,6 @@ class BigInt {
 private:
     char * resultString_ = nullptr;
     size_t resultLength_ = 0;
-    int borrow_ = 0;
-
-    int deg_ = 0; // mul
     int minus_ = 0;
 
     // ------------------------------------------------helpful functions------------------------------------------------
@@ -32,7 +29,6 @@ private:
     public:
         size_t length = 0;
         mutable char * stringArray = nullptr;
-        // int minus = 0; // if BigInt < 0 --> minus = 1
 
         explicit BigInt(std::string &input) : length(input.length())
         {
@@ -57,7 +53,7 @@ private:
 
         BigInt operator-(const BigInt &other);
 
-        BigInt& operator++();
+        BigInt operator++();
 
         BigInt operator*(const BigInt &other);
 
