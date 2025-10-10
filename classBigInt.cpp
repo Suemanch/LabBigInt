@@ -3,8 +3,6 @@
 #include <iostream>
 #include "classBigInt.h"
 
-#define _crtsec
-
 char * BigInt :: getMaxStr(char* num1, char* num2)
 {
     while (*num1 == '0' || *num1 == '-') num1++;
@@ -89,7 +87,7 @@ char * BigInt::addition(char *str1, char * str2)
     resultLength_ = std::max(std::strlen(maxString), std::strlen(minString));
     resultString_ = new char[resultLength_ + 2];
     memset(resultString_, 0, resultLength_ + 2);
-    borrow_ = 0;
+    int borrow = 0;
 
     if (std::strlen(maxString) < std::strlen(minString))
     {
@@ -107,24 +105,24 @@ char * BigInt::addition(char *str1, char * str2)
     {
         int maxStrLastDigit = maxString[i] - '0';
         int minStrLastDigit = minString[i] - '0';
-        int sum = maxStrLastDigit + borrow_ + minStrLastDigit;
+        int sum = maxStrLastDigit + borrow + minStrLastDigit;
 
         if (sum > 9)
         {
             resultString_[resultIndex++] = ( sum % 10 ) + '0';
-            borrow_ = (maxStrLastDigit + borrow_ + minStrLastDigit) / 10;
+            borrow = (maxStrLastDigit + borrow + minStrLastDigit) / 10;
         }
 
         else
         {
             resultString_[resultIndex++] = sum  + '0';
-            borrow_ = 0;
+            borrow = 0;
         }
     }
 
-    if (borrow_ != 0)
+    if (borrow != 0)
     {
-        resultString_[resultIndex++] = borrow_ + '0';
+        resultString_[resultIndex++] = borrow + '0';
     }
 
     std::reverse(resultString_, resultString_ + strlen(resultString_));
@@ -138,6 +136,13 @@ char * BigInt::addition(char *str1, char * str2)
 
 char *BigInt::substraction(char *str1, char * str2)
 {
+    if (strcmp(str1,str2) == 0)
+    {
+        resultString_ = new char[2];
+        strcpy(resultString_,"0\0");
+        return resultString_;
+    }
+
     char *maxString = getMaxStr(str1,str2);
     char * minString;
     if (strcmp(str1, maxString) == 0)
@@ -152,7 +157,7 @@ char *BigInt::substraction(char *str1, char * str2)
     resultLength_ = strlen(maxString);
     resultString_ = new char[resultLength_ + 2];
     memset(resultString_, 0, resultLength_ + 2);
-    borrow_ = 0;
+    int borrow = 0;
 
     minString = addZeros(maxString, minString);
 
@@ -163,22 +168,22 @@ char *BigInt::substraction(char *str1, char * str2)
         int maxStrLastDigit = maxString[i] - '0';
         int minStrLastDigit = minString[i] - '0';
 
-        if ((maxStrLastDigit - borrow_) - minStrLastDigit == 0 and &minString[i] == minString) // here the end of minStr;
+        if ((maxStrLastDigit - borrow) - minStrLastDigit == 0 and &minString[i] == minString) // here the end of minStr;
         {
             break;
         }
 
-        if ( (maxStrLastDigit - borrow_) - minStrLastDigit >= 0)
+        if ( (maxStrLastDigit - borrow) - minStrLastDigit >= 0)
         {
-            resultString_[resultIndex++] = (maxStrLastDigit - borrow_ - minStrLastDigit) + '0';
-            borrow_ = 0;
+            resultString_[resultIndex++] = (maxStrLastDigit - borrow - minStrLastDigit) + '0';
+            borrow = 0;
         }
 
         else
         {
             maxStrLastDigit += 10;
-            resultString_[resultIndex++] = (maxStrLastDigit - borrow_ - minStrLastDigit) + '0';
-            borrow_ = 1;
+            resultString_[resultIndex++] = (maxStrLastDigit - borrow - minStrLastDigit) + '0';
+            borrow = 1;
         }
     }
 
@@ -194,7 +199,6 @@ char *BigInt::substraction(char *str1, char * str2)
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
-
 //--------------------------------------------------multiplication functions--------------------------------------------
 
 char *BigInt::multiplication(char *string1, char *string2)
@@ -202,7 +206,8 @@ char *BigInt::multiplication(char *string1, char *string2)
     resultLength_ = std::max(std::strlen(string1), std::strlen(string2));
     resultString_ = new char[resultLength_ + 2]; // resultLength_ + 2
     memset(resultString_, 0, resultLength_ + 2); // resultLength_ + 2
-    deg_ = 0;
+    int borrow = 0;
+    int deg = 0;
 
     char *maxString = getMaxStr(string1,string2);
     char * minString;
@@ -242,41 +247,41 @@ char *BigInt::multiplication(char *string1, char *string2)
         memset(resultString_, 0, resultLength_ + 2); // clear resultString_
 
         resultIndex = 0;
-        borrow_ = 0;
+        borrow = 0;
 
         for (int j = maxStrLength - 1; j >= 0; j--)
         {
             int maxStrLastDigit = maxString[j] - '0';
 
-            int mul = ( maxStrLastDigit * minStrLastDigit ) + borrow_;
+            int mul = ( maxStrLastDigit * minStrLastDigit ) + borrow;
 
             if (mul > 9)
             {
                 resultString_[resultIndex++] = ( mul % 10 ) + '0';
-                borrow_ = ( (maxStrLastDigit * minStrLastDigit) + borrow_ ) / 10;
+                borrow = ( (maxStrLastDigit * minStrLastDigit) + borrow ) / 10;
             }
 
             else
             {
                 resultString_[resultIndex++] =  mul  + '0';
-                borrow_ = 0;
+                borrow = 0;
             }
 
         }
 
-        if (borrow_ != 0)
+        if (borrow != 0)
         {
-            resultString_[resultIndex++] = borrow_ + '0';
-            borrow_ = 0;
+            resultString_[resultIndex++] = borrow + '0';
+            borrow = 0;
         }
 
         std::reverse(resultString_, resultString_ + strlen(resultString_));
 
         if (i < minStrLength - 1)
         {
-            deg_++;
+            deg++;
 
-            size_t newLen = strlen(resultString_) + deg_;
+            size_t newLen = strlen(resultString_) + deg;
             size_t oldLen = strlen(resultString_);
 
             char * newResult = new char[newLen + 1];
@@ -285,7 +290,7 @@ char *BigInt::multiplication(char *string1, char *string2)
             strcpy(newResult, resultString_);
 
             int counter = 0;
-            while (counter < deg_)
+            while (counter < deg
             {
                 newResult[oldLen + counter] = '0';
                 counter++;
@@ -329,6 +334,7 @@ char *BigInt::division(char *str1, char *str2)
 
     resultLength_ = std::max(std::strlen(str1), std::strlen(str2));
     resultString_ = new char[resultLength_ + 2];
+    int borrow = 0;
 
     char * Result = new char[resultLength_ + 2];
 
@@ -496,11 +502,30 @@ BigInt BigInt::operator-(const BigInt &other)
     return difference;
 }
 
-BigInt& BigInt::operator++()
+BigInt BigInt::operator++()
 {
     BigInt result;
+
+    if (this->minus_ == 1)
+    {
+        result.minus_ = 1;
+    }
+
+    this->stringArray = deleteMinus(this->stringArray, this->minus_);
+
     char minString[2] = "1";
-    result.stringArray = addition(this->stringArray,minString);
+    if (this->minus_ == 1)
+    {
+       result.stringArray = substraction(this->stringArray, minString);
+    }
+
+    if (this->minus_ == 0)
+    {
+        result.stringArray = addition(this->stringArray,minString);
+    }
+
+    result.stringArray = insertMinus(result.stringArray,result.minus_);
+    this->stringArray = insertMinus(this->stringArray, this->minus_);
     return result;
 }
 
@@ -534,8 +559,31 @@ BigInt BigInt::operator/(const BigInt &other)
 {
     BigInt divResult;
 
+    if (strcmp(other.stringArray, "0") == 0)
+    {
+        divResult.stringArray = new char[1];
+        std::cout << "division by 0";
+        return divResult;
+    }
+
     this->stringArray = deleteMinus(this->stringArray, this->minus_);
     other.stringArray = deleteMinus(other.stringArray, other.minus_);
+
+    if (strcmp(this->stringArray,other.stringArray) == 0)
+    {
+        divResult.stringArray = new char[2];
+        strcpy(divResult.stringArray,"1\0");
+        divResult.length = strlen(divResult.stringArray);
+        return divResult;
+    }
+
+    if (strcmp(getMaxStr(this->stringArray,other.stringArray), other.stringArray) == 0)
+    {
+        divResult.stringArray = new char[2];
+        strcpy(divResult.stringArray,"0\0");
+        divResult.length = strlen(divResult.stringArray);
+        return divResult;
+    }
 
     if (this->minus_ + other.minus_ == 1)
     {
