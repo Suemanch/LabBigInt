@@ -28,8 +28,58 @@ int main()
     result = bigInt1 / bigInt2;
     if (strcmp(result.stringArray, "") != 0)
     {
-        std::cout << bigInt1.stringArray << " / " << bigInt2.stringArray << ": " << result.stringArray << "\n";
+        std::cout << bigInt1.stringArray << " / " << bigInt2.stringArray << ": " << result.stringArray << "\n\n";
     }
+
+
+    result = bigInt1;
+    std::cout << result.stringArray << " += ";
+    result += bigInt2;
+    std::cout << bigInt2.stringArray << ": " << result.stringArray << "\n";
+
+    std::cout << result.stringArray << " -= ";
+    result -= bigInt2;
+    std::cout << bigInt2.stringArray << ": " << result.stringArray << "\n";
+
+    std::cout << result.stringArray << " *= ";
+    result *= bigInt2;
+    std::cout << bigInt2.stringArray << ": " << result.stringArray << "\n";
+
+    std::cout << result.stringArray << " /= ";
+    result /= bigInt2;
+    std::cout << bigInt2.stringArray << ": " << result.stringArray << "\n\n";
+
+
+    result = bigInt1 + 125;
+    std::cout << bigInt1.stringArray << " + " << "125(int)" << ": " << result.stringArray << "\n";
+
+    result = bigInt1 - 20;
+    std::cout << bigInt1.stringArray << " - " << "20(int)" << ": " << result.stringArray << "\n";
+
+    result = bigInt1 * 4;
+    std::cout << bigInt1.stringArray << " * " << "4(int)" << ": " << result.stringArray << "\n";
+
+    result = bigInt1 / 2;
+    std::cout << bigInt1.stringArray << " / " << "2(int)" << ": " << result.stringArray << "\n\n";
+
+
+    result = bigInt1;
+    std::cout << result.stringArray << " += ";
+    result += 89;
+    std::cout << "89(int)" << ": " << result.stringArray << "\n";
+
+    std::cout << result.stringArray << " -= ";
+    result -= 67;
+    std::cout << "67(int)" << ": " << result.stringArray << "\n";
+
+    std::cout << result.stringArray << " *= ";
+    result *= 3;
+    std::cout << "3(int)" << ": " << result.stringArray << "\n";
+
+    std::cout << result.stringArray << " /= ";
+    result /=6;
+    std::cout << "6(int)" << ": " << result.stringArray << "\n\n";
+
 
     bigInt1 = ++bigInt1;
     std::cout << "++" << stringBigInt1 << ": " << bigInt1.stringArray << "\n";
