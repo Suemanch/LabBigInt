@@ -4,8 +4,6 @@
 
 class BigInt {
 private:
-    char * resultString_ = nullptr;
-    size_t resultLength_ = 0;
     int minus_ = 0;
 
     // ------------------------------------------------helpful functions------------------------------------------------
@@ -19,10 +17,10 @@ private:
 
     // ----------------------------------------------operation functions------------------------------------------------
 
-    char *substraction(char * str1, char * str2);
-    char *addition(char * str1, char * str2);
-    char *multiplication(char * str1, char * str2);
-    char *division(char * str1, char * str2);
+    char *substraction(char * str1, char * str2, char * resultString);
+    char *addition(char * str1, char * str2, char * resultString);
+    char *multiplication(char * str1, char * str2, char * resultString);
+    char *division(char * str1, char * str2, char * resultString);
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -39,26 +37,54 @@ private:
 
             stringArray = new char[length + 1];
             strcpy(stringArray, input.data());
-
         }
 
-        BigInt() = default;
+        BigInt() : minus_(0), length(0), stringArray(nullptr) {}
 
-        ~BigInt()
-        {
-            // delete stringArray;
-        }
+
+    // -------------------------------------------operators for strings-------------------------------------------------
 
         BigInt operator+(const BigInt &other);
 
         BigInt operator-(const BigInt &other);
 
-        BigInt operator++();
-
         BigInt operator*(const BigInt &other);
 
         BigInt operator/(const BigInt &other);
 
+        BigInt operator++();
+
+        BigInt& operator+=(const BigInt &other);
+
+        BigInt& operator-=(const BigInt &other);
+
+        BigInt& operator*=(const BigInt &other);
+
+        BigInt& operator/=(const BigInt &other);
+
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    // -------------------------------------------operators for strings and int-----------------------------------------
+
+        BigInt operator+(int i);
+
+        BigInt operator-(int i);
+
+        BigInt operator*(int i);
+
+        BigInt operator/(int i);
+
+        BigInt& operator/=(int num);
+
+        BigInt& operator+=(int num);
+
+        BigInt& operator-=(int num);
+
+        BigInt& operator*=(int num);
+
+
+
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 };
 
 #endif
