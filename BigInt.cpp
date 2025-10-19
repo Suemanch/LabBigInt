@@ -275,12 +275,6 @@ char *BigInt::multiplication(char *string1, char *string2, char * resultString)
             break;
         }
 
-        // if (strlen(resultString) >= resultLength)
-        // {
-        //     resultString = new char[strlen(resultString) + 2];
-        //     memset(resultString, 0, resultLength + 2);
-        // }
-
         char * lastResultTemp = new char[strlen(resultString) + 2];
         lastResultTemp = strcpy(lastResultTemp, resultString);
 
