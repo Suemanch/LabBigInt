@@ -1,7 +1,21 @@
-#include <string>
-#include <chrono>
 #include <iostream>
-#include "classBigInt.h"
+#include "BigInt.h"
+
+BigInt BigInt::initNumToBigInt(int num)
+{
+    BigInt bigInt2;
+
+    int len = getLen(num);
+
+    char * str = new char[len + 1];
+    memset(str, 0, len + 1);
+    strcpy(str,intToChar(num,len));
+
+    bigInt2.stringArray = str;
+
+    return bigInt2;
+}
+
 
 char * BigInt :: getMaxStr(char* num1, char* num2)
 {
@@ -25,7 +39,7 @@ char * BigInt :: getMaxStr(char* num1, char* num2)
     return num1; // if num1 = num2
 }
 
-int getLen(int num)
+int BigInt:: getLen(int num)
 {
     int k = 0;
     while (num > 0)
@@ -36,7 +50,7 @@ int getLen(int num)
     return k;
 }
 
-char * intToChar(int num, int k)
+char *BigInt:: intToChar(int num, int k)
 {
     char * result = new char[k + 1];
     memset(result, 0, k + 1);
@@ -72,7 +86,6 @@ char * BigInt :: deleteMinus(char * str, int minus)
     {
         char *newResult = new char[strlen(str) + 1];
         strcpy(newResult, str+1);
-        delete [] str;
         str = newResult;
         return str;
     }
@@ -90,7 +103,6 @@ char * BigInt :: addZeros(char *maxString, char *minString)
         strcpy(newMinString + zerosToAdd, minString);
 
         minString = newMinString;
-        // delete [] newMinString;
     }
 
     return minString;
@@ -263,10 +275,11 @@ char *BigInt::multiplication(char *string1, char *string2, char * resultString)
             break;
         }
 
-        if (strlen(resultString) >= resultLength)
-        {
-            char * stringArray = new char[strlen(stringArray) + 2];
-        }
+        // if (strlen(resultString) >= resultLength)
+        // {
+        //     resultString = new char[strlen(resultString) + 2];
+        //     memset(resultString, 0, resultLength + 2);
+        // }
 
         char * lastResultTemp = new char[strlen(resultString) + 2];
         lastResultTemp = strcpy(lastResultTemp, resultString);
@@ -481,6 +494,11 @@ BigInt BigInt::operator+(const BigInt &other)
         }
     }
 
+    if (strcmp(sum.stringArray, "-0") == 0)
+    {
+        strcpy(sum.stringArray, "0");
+    }
+
     other.stringArray = insertMinus(other.stringArray, other.minus_); // get back "-"
     this -> stringArray = insertMinus(this -> stringArray, this->minus_); // get back "-"
     sum.length = strlen(sum.stringArray);
@@ -535,6 +553,11 @@ BigInt BigInt::operator-(const BigInt &other)
             difference.stringArray = insertMinus(difference.stringArray,difference.minus_);
         }
 
+    }
+
+    if (strcmp(difference.stringArray, "-0") == 0)
+    {
+        strcpy(difference.stringArray, "0");
     }
 
     other.stringArray = insertMinus(other.stringArray,other.minus_);
@@ -670,6 +693,43 @@ BigInt& BigInt::operator+=(const BigInt &other)
     return *this;
 }
 
+bool BigInt::operator==(const BigInt &other) const
+{
+    if (strcmp(this->stringArray, other.stringArray) == 0)
+        return true;
+    return false;
+}
+
+bool operator!=(const BigInt &a, const BigInt &b)
+{
+    if (a == b) return false;
+    return true;
+}
+
+bool BigInt::operator<(const BigInt &other) const
+{
+    if (strcmp(getMaxStr(this->stringArray,other.stringArray), other.stringArray) == 0
+        and strcmp(this->stringArray,other.stringArray) != 0) return true;
+    return false;
+}
+
+bool operator>(const BigInt &a, const BigInt &b)
+{
+    if (a != b and !(a < b)) return true;
+    return false;
+}
+
+bool operator>=(const BigInt &a, const BigInt &b)
+{
+    if (a == b || a > b) return true;
+    return false;
+}
+
+bool operator<=(const BigInt &a, const BigInt &b)
+{
+    if (a == b || a < b) return true;
+    return false;
+}
 
 //-----------------------------------------------owerload operators for string and int---------------------------------
 
@@ -680,13 +740,7 @@ BigInt BigInt::operator/(int num)
 
     divResult.stringArray = this->stringArray;
 
-    int len = getLen(num);
-
-    char * str = new char[len + 1];
-    memset(str, 0, len + 1);
-    strcpy(str,intToChar(num,len));
-
-    tmp.stringArray = str;
+    tmp = initNumToBigInt(num);
 
     divResult = divResult / tmp;
     return divResult;
@@ -699,13 +753,7 @@ BigInt BigInt::operator+(int num)
 
     sum.stringArray = this->stringArray;
 
-    int len = getLen(num);
-
-    char * str = new char[len + 1];
-    memset(str, 0, len + 1);
-    strcpy(str,intToChar(num,len));
-
-    tmp.stringArray = str;
+    tmp = initNumToBigInt(num);
 
     sum = sum + tmp;
     return sum;
@@ -718,13 +766,7 @@ BigInt BigInt::operator*(int num)
 
     mul.stringArray = this->stringArray;
 
-    int len = getLen(num);
-
-    char * str = new char[len + 1];
-    memset(str, 0, len + 1);
-    strcpy(str,intToChar(num,len));
-
-    tmp.stringArray = str;
+    tmp = initNumToBigInt(num);
 
     mul = mul * tmp;
     return mul;
@@ -737,13 +779,7 @@ BigInt BigInt::operator-(int num)
 
     difference.stringArray = this->stringArray;
 
-    int len = getLen(num);
-
-    char * str = new char[len + 1];
-    memset(str, 0, len + 1);
-    strcpy(str,intToChar(num,len));
-
-    tmp.stringArray = str;
+    tmp = initNumToBigInt(num);
 
     difference = difference - tmp;
     return difference;
@@ -771,6 +807,52 @@ BigInt& BigInt::operator+=(int num)
 {
     *this = *this + num;
     return *this;
+}
+
+bool BigInt::operator<(int num) const
+{
+    BigInt bigInt1;
+    BigInt num2;
+    bigInt1.stringArray = this->stringArray;
+    num2 = initNumToBigInt(num);
+
+    if (bigInt1 < num2) return true;
+    return false;
+}
+
+bool BigInt::operator==(int num) const
+{
+    BigInt bigInt1;
+    BigInt num2;
+    bigInt1.stringArray = this->stringArray;
+    num2 = initNumToBigInt(num);
+
+    if (bigInt1 == num2) return true;
+    return false;
+}
+
+bool operator!=(const BigInt &a, int b)
+{
+    if (a == b) return false;
+    return true;
+}
+
+bool operator>(const BigInt &a, int b)
+{
+    if (a != b and !(a < b)) return true;
+    return false;
+}
+
+bool operator>=(const BigInt &a, int b)
+{
+    if (a == b || a > b) return true;
+    return false;
+}
+
+bool operator<=(const BigInt &a, int b)
+{
+    if (a == b || a < b) return true;
+    return false;
 }
 
 

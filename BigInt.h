@@ -2,12 +2,16 @@
 #ifndef CLASSBIGINT_H
 #define CLASSBIGINT_H
 
+#include <string>
+
 class BigInt {
 private:
     int minus_ = 0;
 
     // ------------------------------------------------helpful functions------------------------------------------------
-
+    static BigInt initNumToBigInt(int num);
+    static int getLen(int num);
+    static char * intToChar(int num, int k);
     static char * insertMinus(char *str, int minus);
     static char * deleteMinus(char * strl, int minus);
     static char * getMaxStr(char* num1, char* num2);
@@ -28,7 +32,7 @@ private:
         size_t length = 0;
         mutable char * stringArray = nullptr;
 
-        explicit BigInt(std::string &input) : length(input.length())
+        explicit BigInt(const std::string &input) : length(input.length())
         {
             if (input[0] == '-')
             {
@@ -62,6 +66,10 @@ private:
 
         BigInt& operator/=(const BigInt &other);
 
+        bool operator==(const BigInt &other) const;
+
+        bool operator<(const BigInt &other) const;
+
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     // -------------------------------------------operators for strings and int-----------------------------------------
@@ -82,9 +90,21 @@ private:
 
         BigInt& operator*=(int num);
 
+        bool operator==(int num) const;
 
+        bool operator<(int num) const;
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 };
+
+    bool operator>(const BigInt& a, const BigInt& b);
+    bool operator>=(const BigInt& a, const BigInt& b);
+    bool operator<=(const BigInt& a, const BigInt& b);
+    bool operator!=(const BigInt& a, const BigInt& b);
+
+    bool operator>(const BigInt& a, int b);
+    bool operator>=(const BigInt& a, int b);
+    bool operator<=(const BigInt& a, int b);
+    bool operator!=(const BigInt& a, int b);
 
 #endif
