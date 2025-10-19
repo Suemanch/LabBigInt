@@ -1,4 +1,24 @@
-cmake_minimum_required(VERSION 3.0)
+#cmake_minimum_required(VERSION 3.30) # 3.0
+#
+#set(CMAKE_CXX_STANDARD 20)
+#
+#project(BigInt)
+#
+#set(exe_name ${PROJECT_NAME})
+#
+#add_subdirectory(googletest)
+#
+#add_library(corelib OBJECT BigInt.cpp)
+#
+#add_executable(${exe_name} main.cpp)
+#
+#target_link_libraries(${exe_name} PRIVATE corelib)
+#
+#target_link_libraries(gtest)
+
+
+
+cmake_minimum_required(VERSION 3.30) # 3.0
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -6,12 +26,21 @@ project(BigInt)
 
 set(exe_name ${PROJECT_NAME})
 
-#if (MSVC)
-#    # warning level 4 and all warnings as errors
-#    add_compile_options(/W4 /WX)
-#endif()
+add_subdirectory(googletest)
 
-add_library(corelib OBJECT classBigInt.cpp)
+add_library(corelib OBJECT BigInt.cpp)
 
-add_executable(${exe_name} main.cpp)
-target_link_libraries(${exe_name} PRIVATE corelib)
+add_executable( ${PROJECT_NAME}
+        main.cpp
+#        BigInt.h
+        BigInt.cpp
+)
+
+add_executable(tests
+        tests/BigInt_test.cpp
+        BigInt.cpp
+)
+
+#target_link_libraries(${exe_name} PRIVATE corelib)
+
+target_link_libraries(tests gtest)
